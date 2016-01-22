@@ -506,15 +506,27 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
       d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
       d3.select("#f").select("input").attr("max", d.value.f.length-1);
       path.attr("d", shape);
+      footsies(value.m1,value.m2);
     });    
 
 shape();
 
+var fsvg = d3.select("body")
+            .append("svg").attr("id","LOL")
+              .attr("width", 960)
+              .attr("height", 500);
+
 var LOL = [];
+var FOOTSIES = [];
 var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
 d3.tsv("LOL.TSV",function(error,rows){
+  FOOTSIES = rows;
+  footsies(3,20);
+});
 
-  LOL = rows.filter(function(row){return row["s1"] == 3 && row["s2"] == 20;});
+function footsies(m1,m2) {
+
+  LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
 
   function fillclass(i) {
     if (i == 0 || i == 12)
@@ -527,10 +539,11 @@ d3.tsv("LOL.TSV",function(error,rows){
 
   var size = 960 / 22;
 
-  var fsvg = d3.select("body")
-  .append("svg").attr("id","LOL")
+  fsvg = d3.select("#LOL")
     .attr("width", 960)
     .attr("height", size*LOL.length);
+
+  fsvg.selectAll("*").remove();
 
   var fsvgh = fsvg.append("g");  
   var fsvgb = fsvg.append("g");
@@ -568,10 +581,7 @@ d3.tsv("LOL.TSV",function(error,rows){
     .attr("y", size/2)
     .text(function(d,i) {return d;});
 
-
-
-});
-
+}
 
 </script>
 <script>
