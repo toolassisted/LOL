@@ -286,7 +286,7 @@ var rg = svg.append("g")
 
 var control = d3.select("#controls")
   .selectAll("div")
-    .data(d3.entries({i1:3,i2:20,x:1,f:10,adv:0}))
+    .data(d3.entries({i1:3,i2:20,adv:0,x:1,f:10}))
   .enter().append("div")
     .attr("id", function(d) { return d.key; });
 
@@ -346,7 +346,7 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
       //   control.select("span").text(format(d.value[param]));
       //   shape.param(param, d.value[param]);
       // }
-      var value = {i1: 0, i2: 0, x: d3.select("#x").select("input").property("value"), f: d3.select("#f").select("input").property("value"), adv: d3.select("#adv").select("input").property("value")};
+      var value = {i1: 0, i2: 0, adv: d3.select("#adv").select("input").property("value"), x: d3.select("#x").select("input").property("value"), f: d3.select("#f").select("input").property("value")};
       if (d.value.p == 0) {
         value["i1"] = d.value.i;
         value["i2"] = d3.select("#i2").select("input").property("value");
