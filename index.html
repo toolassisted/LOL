@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html>
+<head>
 <meta charset="utf-8">
 <title>Superformula</title>
 <style>
@@ -23,14 +25,24 @@ rect {
 .blue { stroke: #00f; }
 .cyan { stroke: #0ff; }
 
+#buttons {
+  width: 70%;
+  float: left;
+}
+
 #controls {
+  width: 30%;
+  float: left;
+}
+
+#controls, #buttons {
   /*position: absolute;*/
   /*width: 240px*/;
   font: 10px sans-serif;
 }
 
-#controls span,
-#controls label {
+#controls span, #buttons span,
+#controls label, #buttons label {
   position: relative;
   top: -5px;
   padding: 5px;
@@ -38,18 +50,21 @@ rect {
   width: 20px;
 }
 
-#controls button {
+#buttons button {
   font: 10px sans-serif;
   padding: 5px;
   width: 70px;
 }
 
-#controls .buttons {
-  width: 30%;
+#buttons .buttons {
+  width: 50%;
   float: left;
 }
 
 </style>
+</head>
+<body>
+<div id="buttons"></div>
 <div id="controls"></div>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="LOL.JSON"></script>
@@ -313,8 +328,8 @@ control.append("span")
 //       path.attr("d", shape);
 //     });
 
-var buttons = d3.select("#controls").selectAll("div.buttons").data([1,0]).enter()
-  .insert("div",":first-child").attr("class","buttons");
+var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
+  .append("div").attr("class","buttons");
 
   buttons.selectAll("button")
     .data(function(d){
@@ -362,3 +377,5 @@ d3.tsv("LOL.TSV",function(error,rows){
   LOL = rows.filter(function(row){return row["s1"] == 0;});
 })
 </script>
+</body>
+</html>
