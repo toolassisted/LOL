@@ -37,8 +37,12 @@ rect {
 }
 
 #controls {
-  width: 20%;
+  width: 25%;
   float: left;
+}
+
+#controls div{
+  white-space: nowrap;
 }
 
 #controls, #buttons {
@@ -399,6 +403,11 @@ control.append("input")
 control.append("span")
     .text(function(d) { return format(d.value); });
 
+d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+d3.select("#x").select("input").attr("min", -2).attr("max", -0.5).attr("step", 0.05);
+d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
+d3.select("#f").select("input").attr("max", 50);
 // d3.select("#controls")
 //   .append("div")
 //   .selectAll("button")
@@ -452,8 +461,6 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
       d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
       d3.select("#m1").select("span").attr("max", BOXDOX.length-1).text(value.m1 + " " + BOXDOX[value.m1].m);
       d3.select("#m2").select("span").attr("max", BOXDOX.length-1).text(value.m2 + " " + BOXDOX[value.m2].m);
-      d3.select("#x").select("input").attr("min", -2).attr("max", 0.5).attr("step", 0.05);
-      d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
       d3.select("#f").select("input").attr("max", d.value.f.length-1);
       path.attr("d", shape);
     });    
