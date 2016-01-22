@@ -5,16 +5,21 @@
 <title>Superformula</title>
 <style>
 
+body {
+  background-color: #000;
+  color: #fff;
+}
+
 path {
   stroke-width: 1px;
-  stroke: #ccc;
+  stroke: #333;
   fill: #ddd;
   vector-effect: non-scaling-stroke;
 }
 
 rect {
   stroke-width: 1px;
-  stroke: #ccc;
+  stroke: #333;
   fill: none;
   opacity: 0.8;
   vector-effect: non-scaling-stroke;
@@ -28,10 +33,11 @@ rect {
 #buttons {
   width: 70%;
   float: left;
+  padding-left: 5%;
 }
 
 #controls {
-  width: 30%;
+  width: 20%;
   float: left;
 }
 
@@ -66,7 +72,7 @@ rect {
 <body>
 <div id="buttons"></div>
 <div id="controls"></div>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="d3.min.js"></script>
 <script src="LOL.JSON"></script>
 <script>
 (function() {
@@ -119,7 +125,7 @@ rect {
         dt = 2 * Math.PI / n,
         t,
         r = 0,
-        x,
+        //x,
         y,
         points = [[-2,0],[0,0],[2,0]];
 
@@ -138,13 +144,15 @@ rect {
     //   points[i] = [Math.abs(x) < 1e-6 ? 0 : x, Math.abs(y) < 1e-6 ? 0 : y];
     // }
 
-    console.log(params);
+    // console.log(params);
     if (params.f != null) {
-      var rects = [];
-      rg.selectAll("*").remove();
 
-      var b1 = BOXDOX[params.i1];
-      var b2 = BOXDOX[params.i2];
+      var dg = rg;
+      var rects = [];
+      dg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
       var f = Math.floor(params.f);
       var adv = Math.floor(params.adv);
       var f1 = f;
@@ -157,26 +165,78 @@ rect {
       if (f2 > b2.f.length-1) f2 = b2.f.length-1;
 
       frame = b1.f[f1];
-      // for (var f=0;f<frame.length;f++) {
-        for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
-          rects.push(frame.c6[c]);
-        }
-        for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
-          rects.push(frame.c5[c]);
-        }
-      // }
-      rg.selectAll("rect").data(rects).enter().append("rect")
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
         .attr("class", function(d) {return d.c;})
-        //.attr("x", function(d) { return (params.x-frame.x1)*1.00+d.rx*1.00; })
-        .attr("x", function(d) { return (params.x)*1.00+d.rx*1.00; })
-        .attr("y", function(d) { return -d.ry*1.00-d.rh*1.00; })
-        .attr("height", function(d) { return d.rh*1.00; })
-        .attr("width", function(d) { return d.rw*1.00; });
+        .attr("x", function(d) { return (+params.x+2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
 
       frame = b2.f[f2];
-      // for (var f=0;f<frame.length;f++) {
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
+        .attr("class", function(d) {return d.c;})
+        .attr("x", function(d) { return (-params.x-2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
+
+    }
+    if (params.f != null) {
+      
+      var rects = [];
+      fg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
+      //var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+
+      for (i=0;i<30;i++) {
+
+        var f = i+2;
+
+        rects = [];
+        var dg = fg.append("g")
+                  //.attr("class", f)
+                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
+                  .datum(f)
+                  .on("mouseover",function(){
+                    var df = d3.select(this).datum();
+                    //console.log(df);
+                    shape.param("f", df);
+                    path.attr("d", shape);
+                  });
+
+        if (f == params.f) 
+          dg.append("path")
+          .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
+
+        var f1 = f;
+        var f2 = f;
+        if (adv > 0) f2 -= adv;
+        if (adv < 0) f1 += adv;
+        if (f1 < 0) f1 = 0;
+        if (f2 < 0) f2 = 0;
+        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+        frame = b1.f[f1];
         for (var c=0;c<frame.c6.length;c++) {
           frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
           rects.push(frame.c6[c]);
@@ -185,16 +245,32 @@ rect {
           frame.c5[c].c=frame.c5[c].t!=4?"red":"";
           rects.push(frame.c5[c]);
         }
-      // }
-      rg.selectAll("rect").data(rects).enter().append("rect")
-        .attr("class", function(d) {return d.c;})
-        //.attr("x", function(d) { return (params.x-frame.x1)*1.00+d.rx*1.00; })
-        .attr("x", function(d) { return (-params.x)*1.00+d.rx*1.00; })
-        .attr("y", function(d) { return -d.ry*1.00-d.rh*1.00; })
-        .attr("height", function(d) { return d.rh*1.00; })
-        .attr("width", function(d) { return d.rw*1.00; }); 
-    }
-    return _line(points.map(function(p){return [p[0]*1.00,p[1]*1.00];})) + "Z";
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (+params.x+2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+
+        frame = b2.f[f2];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (-params.x-2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      }
+
+    }    
+    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
   }
 
   var _superformulaTypes = {
@@ -268,6 +344,8 @@ var shape = d3.superformula()
     .size(100000)
     .segments(3600);
 
+var defaults = {m1:3,m2:20,adv:0,x:-1.0,f:10};
+
 var path = svg.append("path")
     .attr("class", "big")
     .attr("transform", "translate(480,250)scale(100)")
@@ -278,6 +356,10 @@ var rg = svg.append("g")
     .attr("class", "big")
     .attr("transform", "translate(480,250)scale(100)");
 
+var fg = svg.append("g")
+    //.attr("class", "big")
+    //.attr("transform", "translate(960,250)scale(50)");    
+
 // var control = d3.select("#controls")
 //   .selectAll("div")
 //     .data(d3.entries(types.asterisk))
@@ -286,24 +368,29 @@ var rg = svg.append("g")
 
 var control = d3.select("#controls")
   .selectAll("div")
-    .data(d3.entries({i1:3,i2:20,adv:0,x:1,f:10}))
+    .data(d3.entries(defaults))
   .enter().append("div")
     .attr("id", function(d) { return d.key; });
+
+control.each(function(d){shape.param(d.key, d.value);});
 
 control.append("label")
     .text(function(d) { return d.key; });
 
 control.append("input")
     .attr("type", "range")
-    .attr("max", 1000)
+    .attr("max", 100)
     .attr("min", 0)
     .attr("step", 1)
-    .property("value", function(d) { return scale(d.value); })
+    .attr("value", function(d) { 
+      return scale(d.value); })
+    .property("value", function(d) { 
+      return scale(d.value); })
     .on("input", function(d) {
-      var v = scale.invert(this.value);
+      var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
       path.attr("d", shape.param(d.key, v));
-      if (d.key == "i1" || d.key == "i2")        
+      if (d.key == "m1" || d.key == "m2")        
         d3.select(this.nextSibling).text(v + " " + BOXDOX[v].m);
       else
         d3.select(this.nextSibling).text(format(v));
@@ -346,13 +433,13 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
       //   control.select("span").text(format(d.value[param]));
       //   shape.param(param, d.value[param]);
       // }
-      var value = {i1: 0, i2: 0, adv: d3.select("#adv").select("input").property("value"), x: d3.select("#x").select("input").property("value"), f: d3.select("#f").select("input").property("value")};
+      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x: shape.param("x")(), f: shape.param("f")()};
       if (d.value.p == 0) {
-        value["i1"] = d.value.i;
-        value["i2"] = d3.select("#i2").select("input").property("value");
+        value["m1"] = d.value.i;
+        value["m2"] = d3.select("#m2").select("input").property("value");
       } else if (d.value.p == 1) {
-        value["i1"] = d3.select("#i1").select("input").property("value");
-        value["i2"] = d.value.i;
+        value["m1"] = d3.select("#m1").select("input").property("value");
+        value["m2"] = d.value.i;
       }
 
       for (var param in value) {
@@ -361,15 +448,17 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
         control.select("span").text(format(value[param]));
         shape.param(param, value[param]);
       }
-      d3.select("#i1").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#i2").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#i1").select("span").attr("max", BOXDOX.length-1).text(value.i1 + " " + BOXDOX[value.i1].m);
-      d3.select("#i2").select("span").attr("max", BOXDOX.length-1).text(value.i2 + " " + BOXDOX[value.i2].m);
-      d3.select("#x").select("input").attr("min", -2).attr("max", 2).attr("step", 0.05);
+      d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+      d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+      d3.select("#m1").select("span").attr("max", BOXDOX.length-1).text(value.m1 + " " + BOXDOX[value.m1].m);
+      d3.select("#m2").select("span").attr("max", BOXDOX.length-1).text(value.m2 + " " + BOXDOX[value.m2].m);
+      d3.select("#x").select("input").attr("min", -2).attr("max", 0.5).attr("step", 0.05);
       d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
       d3.select("#f").select("input").attr("max", d.value.f.length-1);
       path.attr("d", shape);
     });    
+
+shape();
 
 var LOL = [];
 var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
