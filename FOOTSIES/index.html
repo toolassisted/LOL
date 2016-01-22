@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SFV FOOTSIES LOL</title>
+<style>
+
+body {
+  background-color: #000;
+  color: #fff;
+}
+
+path {
+  stroke-width: 1px;
+  stroke: #333;
+  fill: #ddd;
+  vector-effect: non-scaling-stroke;
+}
+
+rect {
+  stroke-width: 1px;
+  stroke: #333;
+  fill: none;
+  opacity: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.fgray { fill: #111;}
+.fred { fill: #300; }
+.fgreen { fill: #030; }
+.fblue { fill: #003; }
+.fcyan { fill: #033; }
+.fyellow { fill: #330; }
+
+.red { stroke: #f00; }
+.green { stroke: #0f0; }
+.blue { stroke: #00f; }
+.cyan { stroke: #0ff; }
+
+#buttons {
+  width: 70%;
+  float: left;
+  padding-left: 5%;
+}
+
+#controls {
+  width: 25%;
+  float: left;
+}
+
+#controls div{
+  white-space: nowrap;
+}
+
+#controls, #buttons, text {
+  /*position: absolute;*/
+  /*width: 240px*/;
+  font: 10px sans-serif;
+}
+
+#controls span, #buttons span,
+#controls label, #buttons label {
+  position: relative;
+  top: -5px;
+  padding: 5px;
+  display: inline-block;
+  width: 20px;
+}
+
+#buttons button {
+  font: 10px sans-serif;
+  padding: 5px;
+  width: 70px;
+}
+
+#buttons .buttons {
+  width: 50%;
+  float: left;
+}
+
+</style>
+</head>
+<body>
+<div id="buttons"></div>
+<div id="controls"></div>
+<script src="d3.min.js"></script>
+<script src="LOL.JSON"></script>
+<script>
+(function() {
+  var _symbol = d3.svg.symbol(),
+      _line = d3.svg.line();
+
+  d3.superformula = function() {
+    var type = _symbol.type(),
+        size = _symbol.size(),
+        segments = size,
+        params = {};
+
+    function superformula(d, i) {
+      var n, p = _superformulaTypes[type.call(this, d, i)];
+      for (n in params) p[n] = params[n].call(this, d, i);
+      return _superformulaPath(p, segments.call(this, d, i), Math.sqrt(size.call(this, d, i)));
+    }
+
+    superformula.type = function(x) {
+      if (!arguments.length) return type;
+      type = d3.functor(x);
+      return superformula;
+    };
+
+    superformula.param = function(name, value) {
+      if (arguments.length < 2) return params[name];
+      params[name] = d3.functor(value);
+      return superformula;
+    };
+
+    // size of superformula in square pixels
+    superformula.size = function(x) {
+      if (!arguments.length) return size;
+      size = d3.functor(x);
+      return superformula;
+    };
+
+    // number of discrete line segments
+    superformula.segments = function(x) {
+      if (!arguments.length) return segments;
+      segments = d3.functor(x);
+      return superformula;
+    };
+
+    return superformula;
+  };
+
+  function _superformulaPath(params, n, diameter) {
+    var i = -1,
+        dt = 2 * Math.PI / n,
+        t,
+        r = 0,
+        //x,
+        y,
+        points = [[-2,0],[0,0],[2,0]];
+
+    // while (++i < n) {
+    //   t = params.m * (i * dt - Math.PI) / 4;
+    //   t = Math.pow(Math.abs(Math.pow(Math.abs(Math.cos(t) / params.a), params.n2)
+    //     + Math.pow(Math.abs(Math.sin(t) / params.b), params.n3)), -1 / params.n1);
+    //   if (t > r) r = t;
+    //   points.push(t);
+    // }
+
+    // r = diameter * Math.SQRT1_2 / r;
+    // i = -1; while (++i < n) {
+    //   x = (t = points[i] * r) * Math.cos(i * dt);
+    //   y = t * Math.sin(i * dt);
+    //   points[i] = [Math.abs(x) < 1e-6 ? 0 : x, Math.abs(y) < 1e-6 ? 0 : y];
+    // }
+
+    // console.log(params);
+    if (params.f != null) {
+
+      var dg = rg;
+      var rects = [];
+      dg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
+      var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+      var f1 = f;
+      var f2 = f;
+      if (adv > 0) f2 -= adv;
+      if (adv < 0) f1 += adv;
+      if (f1 < 0) f1 = 0;
+      if (f2 < 0) f2 = 0;
+      if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+      if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+      dg.append("text")
+        .text(f-1)
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(0,0.2)scale(0.015)");
+
+      frame = b1.f[f1];
+      dg.append("text")
+        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(-2,0.2)scale(0.015)");
+
+      frame = b2.f[f2];
+      dg.append("text")
+        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(2,0.2)scale(0.015)");
+
+      frame = b1.f[f1];
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
+        .attr("class", function(d) {return d.c;})
+        .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
+
+      frame = b2.f[f2];
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
+        .attr("class", function(d) {return d.c;})
+        .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
+
+    }
+    if (params.f != null) {
+      
+      var rects = [];
+      fg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
+      //var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+
+      for (i=0;i<30;i++) {
+
+        var f = i+2;
+
+        rects = [];
+        var dg = fg.append("g")
+                  //.attr("class", f)
+                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
+                  .datum(f)
+                  .on("mouseover",function(){
+                    var df = d3.select(this).datum();
+                    //console.log(df);
+                    if (shape.param("f")() != df) {
+                      shape.param("f", df);
+                      path.attr("d", shape);
+                    }
+                  });
+
+        if (f == params.f) {
+          dg.append("path")
+          .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
+        }
+
+        dg.append("text")
+          .text(f-1)
+          .attr("fill","#999")
+          .attr("text-anchor","middle")
+          .attr("transform", "translate(0,0.5)scale(0.04)");
+
+        var f1 = f;
+        var f2 = f;
+        if (adv > 0) f2 -= adv;
+        if (adv < 0) f1 += adv;
+        if (f1 < 0) f1 = 0;
+        if (f2 < 0) f2 = 0;
+        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+        frame = b1.f[f1];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+
+        frame = b2.f[f2];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      }
+
+    }    
+    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
+  }
+
+  var _superformulaTypes = {
+    asterisk: {m: 12, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
+    bean: {m: 2, n1: 1, n2: 4, n3: 8, a: 1, b: 1},
+    butterfly: {m: 3, n1: 1, n2: 6, n3: 2, a: .6, b: 1},
+    circle: {m: 4, n1: 2, n2: 2, n3: 2, a: 1, b: 1},
+    clover: {m: 6, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
+    cloverFour: {m: 8, n1: 10, n2: -1, n3: -8, a: 1, b: 1},
+    cross: {m: 8, n1: 1.3, n2: .01, n3: 8, a: 1, b: 1},
+    diamond: {m: 4, n1: 1, n2: 1, n3: 1, a: 1, b: 1},
+    drop: {m: 1, n1: .5, n2: .5, n3: .5, a: 1, b: 1},
+    ellipse: {m: 4, n1: 2, n2: 2, n3: 2, a: 9, b: 6},
+    gear: {m: 19, n1: 100, n2: 50, n3: 50, a: 1, b: 1},
+    heart: {m: 1, n1: .8, n2: 1, n3: -8, a: 1, b: .18},
+    heptagon: {m: 7, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
+    hexagon: {m: 6, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
+    malteseCross: {m: 8, n1: .9, n2: .1, n3: 100, a: 1, b: 1},
+    pentagon: {m: 5, n1: 1000, n2: 600, n3: 600, a: 1, b: 1},
+    rectangle: {m: 4, n1: 100, n2: 100, n3: 100, a: 2, b: 1},
+    roundedStar: {m: 5, n1: 2, n2: 7, n3: 7, a: 1, b: 1},
+    square: {m: 4, n1: 100, n2: 100, n3: 100, a: 1, b: 1},
+    star: {m: 5, n1: 30, n2: 100, n3: 100, a: 1, b: 1},
+    triangle: {m: 3, n1: 100, n2: 200, n3: 200, a: 1, b: 1}
+  };
+
+  d3.superformulaTypes = d3.keys(_superformulaTypes);
+})();
+</script>
+<script>
+
+var types = {
+  asterisk: {m: 12, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
+  bean: {m: 2, n1: 1, n2: 4, n3: 8, a: 1, b: 1},
+  butterfly: {m: 3, n1: 1, n2: 6, n3: 2, a: .6, b: 1},
+  circle: {m: 4, n1: 2, n2: 2, n3: 2, a: 1, b: 1},
+  clover: {m: 6, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
+  cloverFour: {m: 8, n1: 10, n2: -1, n3: -8, a: 1, b: 1},
+  cross: {m: 8, n1: 1.3, n2: .01, n3: 8, a: 1, b: 1},
+  diamond: {m: 4, n1: 1, n2: 1, n3: 1, a: 1, b: 1},
+  drop: {m: 1, n1: .5, n2: .5, n3: .5, a: 1, b: 1},
+  ellipse: {m: 4, n1: 2, n2: 2, n3: 2, a: 9, b: 6},
+  gear: {m: 19, n1: 100, n2: 50, n3: 50, a: 1, b: 1},
+  heart: {m: 1, n1: .8, n2: 1, n3: -8, a: 1, b: .18},
+  heptagon: {m: 7, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
+  hexagon: {m: 6, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
+  malteseCross: {m: 8, n1: .9, n2: .1, n3: 100, a: 1, b: 1},
+  pentagon: {m: 5, n1: 1000, n2: 600, n3: 600, a: 1, b: 1},
+  rectangle: {m: 4, n1: 100, n2: 100, n3: 100, a: 2, b: 1},
+  roundedStar: {m: 5, n1: 2, n2: 7, n3: 7, a: 1, b: 1},
+  square: {m: 4, n1: 100, n2: 100, n3: 100, a: 1, b: 1},
+  star: {m: 5, n1: 30, n2: 100, n3: 100, a: 1, b: 1},
+  triangle: {m: 3, n1: 100, n2: 200, n3: 200, a: 1, b: 1}
+};
+
+var format = d3.format(".4n");
+
+function formatkv(k,v) {
+  if (k == "m1" || k == "m2")        
+    return v + " " + BOXDOX[v].m;
+  else if (k == "f")
+    return v-1;
+  else if (k == "adv")
+    return v;
+  else
+    return format(v);
+}
+
+// var scale = d3.scale.linear()
+//     .domain([-10, 20, 1000])
+//     .range([0, 800, 1000]);
+
+var scale = d3.scale.linear();
+
+var svg = d3.select("body")
+  .append("svg")
+    .attr("width", 960)
+    .attr("height", 500);
+
+var shape = d3.superformula()
+    .type("asterisk")
+    .size(100000)
+    .segments(3600);
+
+var defaults = {m1:3,m2:20,adv:0,x1:-1.0,f:6};
+
+var path = svg.append("path")
+    .attr("class", "big")
+    .attr("transform", "translate(480,250)scale(100)")
+    .attr("d", shape);
+
+
+var rg = svg.append("g")
+    .attr("class", "big")
+    .attr("transform", "translate(480,250)scale(100)");
+
+var fg = svg.append("g")
+    //.attr("class", "big")
+    //.attr("transform", "translate(960,250)scale(50)");    
+
+// var control = d3.select("#controls")
+//   .selectAll("div")
+//     .data(d3.entries(types.asterisk))
+//   .enter().append("div")
+//     .attr("id", function(d) { return d.key; });
+
+var control = d3.select("#controls")
+  .selectAll("div")
+    .data(d3.entries(defaults))
+  .enter().append("div")
+    .attr("id", function(d) { return d.key; });
+
+control.each(function(d){shape.param(d.key, d.value);});
+
+control.append("label")
+    .text(function(d) { return d.key.toUpperCase(); });
+
+control.append("input")
+    .attr("type", "range")
+    .attr("max", 100)
+    .attr("min", 0)
+    .attr("step", 1)
+    .attr("value", function(d) { 
+      return scale(d.value); })
+    .property("value", function(d) { 
+      return scale(d.value); })
+    .on("input", function(d) {
+      var v = this.value; //scale.invert(this.value);
+      //var v = scale(this.value);
+      path.attr("d", shape.param(d.key, v));
+      d3.select(this.nextSibling).text(formatkv(d.key,v));
+    });
+
+control.append("span")
+    .text(function(d) { return formatkv(d.key, d.value); });
+
+d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+d3.select("#x1").select("input").attr("min", -2).attr("max", -0.5).attr("step", 0.05);
+d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
+d3.select("#f").select("input").attr("max", 50);
+// d3.select("#controls")
+//   .append("div")
+//   .selectAll("button")
+//     .data(d3.entries(types))
+//   .enter().append("button")
+//     .text(function(d) { return d.key; })
+//     .on("click", function(d) {
+//       for (var param in d.value) {
+//         var control = d3.select("#" + param);
+//         control.select("input").property("value", scale(d.value[param]));
+//         control.select("span").text(format(d.value[param]));
+//         shape.param(param, d.value[param]);
+//       }
+//       path.attr("d", shape);
+//     });
+
+var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
+  .append("div").attr("class","buttons");
+
+  buttons.selectAll("button")
+    .data(function(d){
+      return d3.entries(BOXDOX.filter(function(p){
+        return p.p==d;
+      }))
+    })
+  .enter().append("button")
+    .text(function(d) { return d.value.c + " " + d.value.m; })
+    .on("click", function(d) {
+      // for (var param in d.value) {
+      //   var control = d3.select("#" + param);
+      //   control.select("input").property("value", scale(d.value[param]));
+      //   control.select("span").text(format(d.value[param]));
+      //   shape.param(param, d.value[param]);
+      // }
+      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
+      if (d.value.p == 0) {
+        value["m1"] = d.value.i;
+        value["m2"] = d3.select("#m2").select("input").property("value");
+      } else if (d.value.p == 1) {
+        value["m1"] = d3.select("#m1").select("input").property("value");
+        value["m2"] = d.value.i;
+      }
+
+      for (var param in value) {
+        var control = d3.select("#" + param);
+        var v = value[param];
+        control.select("input").property("value", scale(value[param]));
+        control.select("span").text(formatkv(param, v));
+        shape.param(param, value[param]);
+      }
+      d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+      d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+      d3.select("#f").select("input").attr("max", d.value.f.length-1);
+      path.attr("d", shape);
+    });    
+
+shape();
+
+var LOL = [];
+var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
+d3.tsv("LOL.TSV",function(error,rows){
+
+  LOL = rows.filter(function(row){return row["s1"] == 0;});
+
+  function fillclass(i) {
+    if (i == 0 || i == 12)
+      return "fyellow";
+    if (i == 1 || (i >= 3 && i <= 11))
+      return "fblue";
+    if (i == 2 || i >= 13)
+      return "fred";
+  }
+
+  var size = 960 / 22;
+
+  var fsvg = d3.select("body")
+  .append("svg").attr("id","LOL")
+    .attr("width", 960)
+    .attr("height", size*LOL.length);
+
+  var fsvgh = fsvg.append("g");  
+  var fsvgb = fsvg.append("g");
+
+  fsvgh.selectAll("rect").data(H).enter().append("rect")
+    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclass(i);})
+    .attr("x", function(d,i) {return i*size;});
+
+  fsvgh.selectAll("text").data(H).enter().append("text")
+    .attr("fill","#999")
+    .attr("text-anchor","middle")
+    .attr("x", function(d,i) {return i*size+size/2;})
+    .attr("y", size/2)
+    .text(function(d,i) {return d.toUpperCase();});
+
+  
+  var fsvgr = fsvgb.selectAll("g").data(LOL).enter().append("g")
+                .attr("transform", function(d,i){ return "translate(0,"+((i+1)*size)+")";});
+
+  fsvgr.selectAll("rect").data(function(d,i){
+      return H.map(function(h,i){return d[h];});
+    }).enter().append("rect")
+    .attr("width",size).attr("height",size)
+    .attr("class",function(d,i){
+      return i < 5 || i > 19 ? fillclass(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
+    .attr("x", function(d,i) {return (i)*size;});
+
+
+  fsvgr.selectAll("text").data(function(d,i){
+      return H.map(function(h,i){return d[h];});
+    }).enter().append("text")
+    .attr("fill","#999")
+    .attr("text-anchor","middle")
+    .attr("x", function(d,i) {return i*size+size/2;})
+    .attr("y", size/2)
+    .text(function(d,i) {return d;});
+
+
+
+});
+
+
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-72771119-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
