@@ -168,6 +168,13 @@ rect {
       if (f1 > b1.f.length-1) f1 = b1.f.length-1;
       if (f2 > b2.f.length-1) f2 = b2.f.length-1;
 
+
+      dg.append("text")
+        .text(f-1)
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(0,0.2)scale(0.01)");
+
       frame = b1.f[f1];
       for (var c=0;c<frame.c6.length;c++) {
         frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
@@ -223,13 +230,22 @@ rect {
                   .on("mouseover",function(){
                     var df = d3.select(this).datum();
                     //console.log(df);
-                    shape.param("f", df);
-                    path.attr("d", shape);
+                    if (shape.param("f")() != df) {
+                      shape.param("f", df);
+                      path.attr("d", shape);
+                    }
                   });
 
-        if (f == params.f) 
+        if (f == params.f) {
           dg.append("path")
           .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
+        }
+
+        dg.append("text")
+          .text(f-1)
+          .attr("fill","#999")
+          .attr("text-anchor","middle")
+          .attr("transform", "translate(0,0.5)scale(0.03)");
 
         var f1 = f;
         var f2 = f;
@@ -332,6 +348,17 @@ var types = {
 
 var format = d3.format(".4n");
 
+function formatkv(k,v) {
+  if (k == "m1" || k == "m2")        
+    return v + " " + BOXDOX[v].m;
+  else if (k == "f")
+    return v-1;
+  else if (k == "adv")
+    return v;
+  else
+    return format(v);
+}
+
 // var scale = d3.scale.linear()
 //     .domain([-10, 20, 1000])
 //     .range([0, 800, 1000]);
@@ -348,7 +375,7 @@ var shape = d3.superformula()
     .size(100000)
     .segments(3600);
 
-var defaults = {m1:3,m2:20,adv:0,x:-1.0,f:10};
+var defaults = {m1:3,m2:20,adv:0,x:-1.0,f:6};
 
 var path = svg.append("path")
     .attr("class", "big")
@@ -394,14 +421,11 @@ control.append("input")
       var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
       path.attr("d", shape.param(d.key, v));
-      if (d.key == "m1" || d.key == "m2")        
-        d3.select(this.nextSibling).text(v + " " + BOXDOX[v].m);
-      else
-        d3.select(this.nextSibling).text(format(v));
+      d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
 
 control.append("span")
-    .text(function(d) { return format(d.value); });
+    .text(function(d) { return formatkv(d.key, d.value); });
 
 d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
 d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
@@ -453,14 +477,13 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
 
       for (var param in value) {
         var control = d3.select("#" + param);
+        var v = value[param];
         control.select("input").property("value", scale(value[param]));
-        control.select("span").text(format(value[param]));
+        control.select("span").text(formatkv(param, v));
         shape.param(param, value[param]);
       }
       d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
       d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#m1").select("span").attr("max", BOXDOX.length-1).text(value.m1 + " " + BOXDOX[value.m1].m);
-      d3.select("#m2").select("span").attr("max", BOXDOX.length-1).text(value.m2 + " " + BOXDOX[value.m2].m);
       d3.select("#f").select("input").attr("max", d.value.f.length-1);
       path.attr("d", shape);
     });    
