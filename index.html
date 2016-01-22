@@ -168,13 +168,11 @@ rect {
       if (f1 > b1.f.length-1) f1 = b1.f.length-1;
       if (f2 > b2.f.length-1) f2 = b2.f.length-1;
 
-
       dg.append("text")
         .text(f-1)
         .attr("fill","#999")
         .attr("text-anchor","middle")
         .attr("transform", "translate(0,0.2)scale(0.015)");
-
 
       frame = b1.f[f1];
       dg.append("text")
@@ -183,7 +181,7 @@ rect {
         .attr("text-anchor","middle")
         .attr("transform", "translate(-2,0.2)scale(0.015)");
 
-      frame = b1.f[f2];
+      frame = b2.f[f2];
       dg.append("text")
         .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
         .attr("fill","#999")
@@ -201,7 +199,7 @@ rect {
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
         .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (+params.x+2)+d.rx; })
+        .attr("x", function(d) { return (+params.x1+2)+d.rx; })
         .attr("y", function(d) { return -d.ry-d.rh; })
         .attr("height", function(d) { return d.rh; })
         .attr("width", function(d) { return d.rw; });
@@ -217,7 +215,7 @@ rect {
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
         .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (-params.x-2)+d.rx; })
+        .attr("x", function(d) { return (-params.x1-2)+d.rx; })
         .attr("y", function(d) { return -d.ry-d.rh; })
         .attr("height", function(d) { return d.rh; })
         .attr("width", function(d) { return d.rw; });
@@ -282,7 +280,7 @@ rect {
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (+params.x+2)+d.rx; })
+          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
@@ -298,7 +296,7 @@ rect {
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (-params.x-2)+d.rx; })
+          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
@@ -390,7 +388,7 @@ var shape = d3.superformula()
     .size(100000)
     .segments(3600);
 
-var defaults = {m1:3,m2:20,adv:0,x:-1.0,f:6};
+var defaults = {m1:3,m2:20,adv:0,x1:-1.0,f:6};
 
 var path = svg.append("path")
     .attr("class", "big")
@@ -421,7 +419,7 @@ var control = d3.select("#controls")
 control.each(function(d){shape.param(d.key, d.value);});
 
 control.append("label")
-    .text(function(d) { return d.key; });
+    .text(function(d) { return d.key.toUpperCase(); });
 
 control.append("input")
     .attr("type", "range")
@@ -444,7 +442,7 @@ control.append("span")
 
 d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
 d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-d3.select("#x").select("input").attr("min", -2).attr("max", -0.5).attr("step", 0.05);
+d3.select("#x1").select("input").attr("min", -2).attr("max", -0.5).attr("step", 0.05);
 d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
 d3.select("#f").select("input").attr("max", 50);
 // d3.select("#controls")
@@ -481,7 +479,7 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
       //   control.select("span").text(format(d.value[param]));
       //   shape.param(param, d.value[param]);
       // }
-      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x: shape.param("x")(), f: shape.param("f")()};
+      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
       if (d.value.p == 0) {
         value["m1"] = d.value.i;
         value["m2"] = d3.select("#m2").select("input").property("value");
