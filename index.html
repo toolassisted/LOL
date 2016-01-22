@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Superformula</title>
+<title>SFV FOOTSIES LOL</title>
 <style>
 
 body {
@@ -45,7 +45,7 @@ rect {
   white-space: nowrap;
 }
 
-#controls, #buttons {
+#controls, #buttons, text {
   /*position: absolute;*/
   /*width: 240px*/;
   font: 10px sans-serif;
@@ -173,7 +173,22 @@ rect {
         .text(f-1)
         .attr("fill","#999")
         .attr("text-anchor","middle")
-        .attr("transform", "translate(0,0.2)scale(0.01)");
+        .attr("transform", "translate(0,0.2)scale(0.015)");
+
+
+      frame = b1.f[f1];
+      dg.append("text")
+        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(-2,0.2)scale(0.015)");
+
+      frame = b1.f[f2];
+      dg.append("text")
+        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(2,0.2)scale(0.015)");
 
       frame = b1.f[f1];
       for (var c=0;c<frame.c6.length;c++) {
@@ -245,7 +260,7 @@ rect {
           .text(f-1)
           .attr("fill","#999")
           .attr("text-anchor","middle")
-          .attr("transform", "translate(0,0.5)scale(0.03)");
+          .attr("transform", "translate(0,0.5)scale(0.04)");
 
         var f1 = f;
         var f2 = f;
