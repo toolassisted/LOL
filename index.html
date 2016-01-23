@@ -17,11 +17,11 @@ path {
   vector-effect: non-scaling-stroke;
 }
 
-rect {
+#BOXDOX rect {
   stroke-width: 1px;
-  stroke: #333;
+  /*stroke: #333;*/
   fill: none;
-  opacity: 0.8;
+  /*opacity: 0.8;*/
   vector-effect: non-scaling-stroke;
 }
 
@@ -32,6 +32,13 @@ rect {
 .fcyan { fill: #033; }
 .fyellow { fill: #330; }
 
+.hred { fill: #600; }
+.hgreen { fill: #060; }
+.hblue { fill: #006; }
+.hcyan { fill: #066; }
+.hyellow { fill: #660; }
+
+.gray { stroke: #333; }
 .red { stroke: #f00; }
 .green { stroke: #0f0; }
 .blue { stroke: #00f; }
@@ -52,7 +59,7 @@ rect {
   white-space: nowrap;
 }
 
-#controls, #buttons, text {
+#controls, #buttons, #BOXDOX text {
   /*position: absolute;*/
   /*width: 240px*/;
   font: 10px sans-serif;
@@ -78,11 +85,22 @@ rect {
   float: left;
 }
 
+.LOL text {
+  text-anchor: middle;
+  fill: #999;
+  font: 8px sans-serif;
+}
+
+#svg {
+  text-align: center;
+}
+
 </style>
 </head>
 <body>
 <div id="buttons"></div>
 <div id="controls"></div>
+<div id="svg"></div>
 <script src="d3.min.js"></script>
 <script src="LOL.JSON"></script>
 <script>
@@ -201,7 +219,7 @@ rect {
         rects.push(frame.c6[c]);
       }
       for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"gray";
         rects.push(frame.c5[c]);
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
@@ -385,8 +403,8 @@ function formatkv(k,v) {
 
 var scale = d3.scale.linear();
 
-var svg = d3.select("body")
-  .append("svg")
+var svg = d3.select("#svg")
+  .append("svg").attr("id","BOXDOX")
     .attr("width", 960)
     .attr("height", 500);
 
@@ -511,10 +529,15 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
 
 shape();
 
-var fsvg = d3.select("body")
-            .append("svg").attr("id","LOL")
-              .attr("width", 960)
+var fsvg1 = d3.select("#svg")
+            .append("svg").attr("id","LOL1").attr("class","LOL")
+              .attr("width", 480)
               .attr("height", 500);
+
+// var fsvg2 = d3.select("#svg")
+//             .append("svg").attr("id","LOL2").attr("class","LOL")
+//               .attr("width", 480)
+//               .attr("height", 500);
 
 var LOL = [];
 var FOOTSIES = [];
@@ -528,20 +551,37 @@ function footsies(m1,m2) {
 
   LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
 
-  function fillclass(i) {
+  function fillclassh(i) {
     if (i == 0 || i == 12)
       return "fyellow";
     if (i == 1 || (i >= 3 && i <= 11))
       return "fblue";
-    if (i == 2 || i >= 13)
+    if (i == 2 || (i >= 13 && i <= 21))
       return "fred";
   }
+  function fillclassr(i) {
+    if (i == 0 || i == 12)
+      return "fyellow";
+    if (i == 1 || (i >= 4 && i <= 11))
+      return "fblue";
+    if (i == 2 || (i >= 13 && i <= 20))
+      return "fred";
+  }
+  
+  var color1 = d3.scale.linear()
+    .domain([-2, -0.5])
+    .range(["#003", "#006"]);
 
-  var size = 960 / 22;
+  var color2 = d3.scale.linear()
+    .domain([0.5, 2])
+    .range(["#600", "#300"]);
 
-  fsvg = d3.select("#LOL")
-    .attr("width", 960)
-    .attr("height", size*LOL.length);
+  var width = 480 * 1;
+  var size = width / 22;
+
+  var fsvg = d3.selectAll(".LOL")
+    .attr("width", width)
+    .attr("height", size*(LOL.length+1));
 
   fsvg.selectAll("*").remove();
 
@@ -549,17 +589,15 @@ function footsies(m1,m2) {
   var fsvgb = fsvg.append("g");
 
   fsvgh.selectAll("rect").data(H).enter().append("rect")
-    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclass(i);})
+    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclassh(i);})
     .attr("x", function(d,i) {return i*size;});
 
   fsvgh.selectAll("text").data(H).enter().append("text")
-    .attr("fill","#999")
-    .attr("text-anchor","middle")
     .attr("x", function(d,i) {return i*size+size/2;})
     .attr("y", size/2)
     .text(function(d,i) {return d.toUpperCase();});
 
-  
+
   var fsvgr = fsvgb.selectAll("g").data(LOL).enter().append("g")
                 .attr("transform", function(d,i){ return "translate(0,"+((i+1)*size)+")";});
 
@@ -568,18 +606,31 @@ function footsies(m1,m2) {
     }).enter().append("rect")
     .attr("width",size).attr("height",size)
     .attr("class",function(d,i){
-      return i < 5 || i > 19 ? fillclass(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
-    .attr("x", function(d,i) {return (i)*size;});
+      return i < 5 || i > 19 ? fillclassr(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
+    .attr("fill",function(d,i){
+      return i == 3 ? color1(d) : i == 21 ? color2(d) : "";})
+    .attr("x", function(d,i) {return (i)*size;})
+    .datum(function(d,i){return i;})
+    .on("mouseenter",function(){
+      var di = d3.select(this).datum();
+      //console.log(di);
+      if (di >= 5 && di <= 19) {
+        var d = d3.select(this.parentNode).datum();
+        shape.param("adv", 12-di);
+        shape.param("m1", d["s1"]);
+        shape.param("m2", d["s2"]);
+        shape.param("x1", d["x1"]);
+        path.attr("d", shape);
+      }
+    });
 
 
   fsvgr.selectAll("text").data(function(d,i){
       return H.map(function(h,i){return d[h];});
     }).enter().append("text")
-    .attr("fill","#999")
-    .attr("text-anchor","middle")
     .attr("x", function(d,i) {return i*size+size/2;})
     .attr("y", size/2)
-    .text(function(d,i) {return d;});
+    .text(function(d,i) {return true || i < 5 || i > 19 ? d : "";});
 
 }
 
