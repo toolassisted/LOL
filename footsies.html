@@ -17,11 +17,12 @@ path {
   vector-effect: non-scaling-stroke;
 }
 
-rect {
+#BOXDOX rect {
   stroke-width: 1px;
-  stroke: #333;
+  /*stroke: #333;*/
   fill: none;
-  opacity: 0.8;
+  /*opacity: 0.8;*/
+  mix-blend-mode: screen;
   vector-effect: non-scaling-stroke;
 }
 
@@ -32,10 +33,23 @@ rect {
 .fcyan { fill: #033; }
 .fyellow { fill: #330; }
 
+.hred { fill: #600; }
+.hgreen { fill: #060; }
+.hblue { fill: #006; }
+.hcyan { fill: #066; }
+.hyellow { fill: #660; }
+
+.gray { stroke: #333; }
 .red { stroke: #f00; }
 .green { stroke: #0f0; }
 .blue { stroke: #00f; }
 .cyan { stroke: #0ff; }
+
+.p2gray { stroke: #333; }
+.p2red { stroke: #f66; }
+.p2green { stroke: #6f6; }
+.p2blue { stroke: #66f; }
+.p2cyan { stroke: #6ff; }
 
 #buttons {
   width: 70%;
@@ -52,7 +66,7 @@ rect {
   white-space: nowrap;
 }
 
-#controls, #buttons, text {
+#controls, #buttons, #BOXDOX text {
   /*position: absolute;*/
   /*width: 240px*/;
   font: 10px sans-serif;
@@ -78,11 +92,22 @@ rect {
   float: left;
 }
 
+.LOL text {
+  text-anchor: middle;
+  fill: #999;
+  font: 8px sans-serif;
+}
+
+#svg {
+  text-align: center;
+}
+
 </style>
 </head>
 <body>
 <div id="buttons"></div>
 <div id="controls"></div>
+<div id="svg"></div>
 <script src="d3.min.js"></script>
 <script src="LOL.JSON"></script>
 <script>
@@ -101,6 +126,23 @@ rect {
       for (n in params) p[n] = params[n].call(this, d, i);
       return _superformulaPath(p, segments.call(this, d, i), Math.sqrt(size.call(this, d, i)));
     }
+
+    superformula.update = function(x, d, i) {
+      var n, p = _superformulaTypes[type.call(this, d, i)];
+      for (n in params) p[n] = params[n].call(this, d, i);
+      var fpath = d3.select("#fpath").remove();
+      var fg = d3.select("#fg"+x);
+
+      if (!fg.empty()) {
+        if (fpath.empty())           
+          fg.append("path").attr("id", "fpath")
+          .attr("d", _line([[-2,0],[2,0]].map(function(p){return [p[0],p[1]];})) + "Z");
+        else
+          fg.append(function(){return fpath.node();});
+      }
+      
+      return render(p);
+    };
 
     superformula.type = function(x) {
       if (!arguments.length) return type;
@@ -157,76 +199,7 @@ rect {
 
     // console.log(params);
     if (params.f != null) {
-
-      var dg = rg;
-      var rects = [];
-      dg.selectAll("*").remove();
-
-      var b1 = BOXDOX[params.m1];
-      var b2 = BOXDOX[params.m2];
-      var f = Math.floor(params.f);
-      var adv = Math.floor(params.adv);
-      var f1 = f;
-      var f2 = f;
-      if (adv > 0) f2 -= adv;
-      if (adv < 0) f1 += adv;
-      if (f1 < 0) f1 = 0;
-      if (f2 < 0) f2 = 0;
-      if (f1 > b1.f.length-1) f1 = b1.f.length-1;
-      if (f2 > b2.f.length-1) f2 = b2.f.length-1;
-
-      dg.append("text")
-        .text(f-1)
-        .attr("fill","#999")
-        .attr("text-anchor","middle")
-        .attr("transform", "translate(0,0.2)scale(0.015)");
-
-      frame = b1.f[f1];
-      dg.append("text")
-        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
-        .attr("fill","#999")
-        .attr("text-anchor","middle")
-        .attr("transform", "translate(-2,0.2)scale(0.015)");
-
-      frame = b2.f[f2];
-      dg.append("text")
-        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
-        .attr("fill","#999")
-        .attr("text-anchor","middle")
-        .attr("transform", "translate(2,0.2)scale(0.015)");
-
-      frame = b1.f[f1];
-      for (var c=0;c<frame.c6.length;c++) {
-        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
-        rects.push(frame.c6[c]);
-      }
-      for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
-        rects.push(frame.c5[c]);
-      }
-      dg.selectAll("rect").data(rects).enter().append("rect")
-        .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (+params.x1+2)+d.rx; })
-        .attr("y", function(d) { return -d.ry-d.rh; })
-        .attr("height", function(d) { return d.rh; })
-        .attr("width", function(d) { return d.rw; });
-
-      frame = b2.f[f2];
-      for (var c=0;c<frame.c6.length;c++) {
-        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
-        rects.push(frame.c6[c]);
-      }
-      for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
-        rects.push(frame.c5[c]);
-      }
-      dg.selectAll("rect").data(rects).enter().append("rect")
-        .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (-params.x1-2)+d.rx; })
-        .attr("y", function(d) { return -d.ry-d.rh; })
-        .attr("height", function(d) { return d.rh; })
-        .attr("width", function(d) { return d.rw; });
-
+      render(params);
     }
     if (params.f != null) {
       
@@ -244,20 +217,22 @@ rect {
 
         rects = [];
         var dg = fg.append("g")
-                  //.attr("class", f)
+                  .attr("id", "fg"+f)
                   .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
                   .datum(f)
                   .on("mouseover",function(){
                     var df = d3.select(this).datum();
                     //console.log(df);
                     if (shape.param("f")() != df) {
-                      shape.param("f", df);
-                      path.attr("d", shape);
+                      path.attr("d", shape.param("f", df).update(df));
                     }
+                  })
+                  .on("click",function(){
+                    d3.select("#f").select("input").node().focus();
                   });
 
         if (f == params.f) {
-          dg.append("path")
+          dg.append("path").attr("id", "fpath")
           .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
         }
 
@@ -294,11 +269,11 @@ rect {
 
         frame = b2.f[f2];
         for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
           rects.push(frame.c6[c]);
         }
         for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
           rects.push(frame.c5[c]);
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
@@ -310,6 +285,83 @@ rect {
       }
 
     }    
+    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
+  }
+
+  function render(params, n, diameter) {
+    var points = [[-2,0],[0,0],[2,0]];
+    if (params.f != null) {
+
+      var dg = rg;
+      var rects = [];
+      dg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
+      var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+      var f1 = f;
+      var f2 = f;
+      if (adv > 0) f2 -= adv;
+      if (adv < 0) f1 += adv;
+      if (f1 < 0) f1 = 0;
+      if (f2 < 0) f2 = 0;
+      if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+      if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+      dg.append("text")
+        .text(f-1)
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(0,0.2)scale(0.015)");
+
+      frame = b1.f[f1];
+      dg.append("text")
+        .text(formatadv( params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(-2,0.2)scale(0.015)");
+
+      frame = b2.f[f2];
+      dg.append("text")
+        .text(formatadv(-params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .attr("fill","#999")
+        .attr("text-anchor","middle")
+        .attr("transform", "translate(2,0.2)scale(0.015)");
+
+      frame = b1.f[f1];
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"red":"gray";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
+        .attr("class", function(d) {return d.c;})
+        .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
+
+      frame = b2.f[f2];
+      for (var c=0;c<frame.c6.length;c++) {
+        frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
+        rects.push(frame.c6[c]);
+      }
+      for (var c=0;c<frame.c5.length;c++) {
+        frame.c5[c].c=frame.c5[c].t!=4?"p2red":"p2gray";
+        rects.push(frame.c5[c]);
+      }
+      dg.selectAll("rect").data(rects).enter().append("rect")
+        .attr("class", function(d) {return d.c;})
+        .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+        .attr("y", function(d) { return -d.ry-d.rh; })
+        .attr("height", function(d) { return d.rh; })
+        .attr("width", function(d) { return d.rw; });
+
+    } 
     return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
   }
 
@@ -367,6 +419,7 @@ var types = {
 };
 
 var format = d3.format(".4n");
+var formatadv = d3.format("+");
 
 function formatkv(k,v) {
   if (k == "m1" || k == "m2")        
@@ -385,8 +438,8 @@ function formatkv(k,v) {
 
 var scale = d3.scale.linear();
 
-var svg = d3.select("body")
-  .append("svg")
+var svg = d3.select("#svg")
+  .append("svg").attr("id","BOXDOX")
     .attr("width", 960)
     .attr("height", 500);
 
@@ -440,7 +493,15 @@ control.append("input")
     .on("input", function(d) {
       var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
-      path.attr("d", shape.param(d.key, v));
+      if (d.key == "m1")
+        footsies(v,d3.select("#m2").select("input").property("value"));
+      else if (d.key == "m2")
+        footsies(d3.select("#m1").select("input").property("value"),v);
+
+      if (d.key == "f")
+        path.attr("d", shape.param(d.key, v).update(v));
+      else
+        path.attr("d", shape.param(d.key, v));
       d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
 
@@ -468,6 +529,38 @@ d3.select("#f").select("input").attr("max", 50);
 //       path.attr("d", shape);
 //     });
 
+function mclick(d) {
+  // for (var param in d.value) {
+  //   var control = d3.select("#" + param);
+  //   control.select("input").property("value", scale(d.value[param]));
+  //   control.select("span").text(format(d.value[param]));
+  //   shape.param(param, d.value[param]);
+  // }
+  var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
+  if (d.value.p == 0) {
+    value["m1"] = d.value.i;
+    value["m2"] = d3.select("#m2").select("input").property("value");
+    d3.select("#m1").select("input").node().focus();
+  } else if (d.value.p == 1) {
+    value["m1"] = d3.select("#m1").select("input").property("value");
+    value["m2"] = d.value.i;
+    d3.select("#m2").select("input").node().focus();
+  }
+
+  for (var param in value) {
+    var control = d3.select("#" + param);
+    var v = value[param];
+    control.select("input").property("value", scale(value[param]));
+    control.select("span").text(formatkv(param, v));
+    shape.param(param, value[param]);
+  }
+  d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+  d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+  d3.select("#f").select("input").attr("max", Math.max(BOXDOX[value.m1].f.length,BOXDOX[value.m2].f.length)-1);
+  path.attr("d", shape);
+  footsies(value.m1,value.m2);
+}
+
 var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
   .append("div").attr("class","buttons");
 
@@ -479,44 +572,25 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
     })
   .enter().append("button")
     .text(function(d) { return d.value.c + " " + d.value.m; })
-    .on("click", function(d) {
-      // for (var param in d.value) {
-      //   var control = d3.select("#" + param);
-      //   control.select("input").property("value", scale(d.value[param]));
-      //   control.select("span").text(format(d.value[param]));
-      //   shape.param(param, d.value[param]);
-      // }
-      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
-      if (d.value.p == 0) {
-        value["m1"] = d.value.i;
-        value["m2"] = d3.select("#m2").select("input").property("value");
-      } else if (d.value.p == 1) {
-        value["m1"] = d3.select("#m1").select("input").property("value");
-        value["m2"] = d.value.i;
-      }
-
-      for (var param in value) {
-        var control = d3.select("#" + param);
-        var v = value[param];
-        control.select("input").property("value", scale(value[param]));
-        control.select("span").text(formatkv(param, v));
-        shape.param(param, value[param]);
-      }
-      d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#f").select("input").attr("max", d.value.f.length-1);
-      path.attr("d", shape);
-      footsies(value.m1,value.m2);
-    });    
+    .on("click", mclick);    
 
 shape();
 
-var fsvg = d3.select("body")
-            .append("svg").attr("id","LOL")
-              .attr("width", 960)
+var fsvg1 = d3.select("#svg")
+            .append("svg").attr("id","LOL1").attr("class","LOL")
+              .attr("width", 480)
               .attr("height", 500);
 
-var LOL = [];
+var fsvg2 = d3.select("#svg")
+            .append("svg").attr("id","LOL2").attr("class","LOL")
+              .attr("width", 480)
+              .attr("height", 500);
+
+var fsvg3 = d3.select("#svg")
+            .append("svg").attr("id","LOL3").attr("class","LOL")
+              .attr("width", 480)
+              .attr("height", 500);
+
 var FOOTSIES = [];
 var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
 d3.tsv("LOL.TSV",function(error,rows){
@@ -525,23 +599,49 @@ d3.tsv("LOL.TSV",function(error,rows){
 });
 
 function footsies(m1,m2) {
+  var LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
+  // _footsies(m1,m2,LOL,"#LOL1");
 
-  LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
+  LOL = FOOTSIES.filter(function(row){return row["s1"] == m1});
+  _footsies(m1,m2,LOL,"#LOL2");
 
-  function fillclass(i) {
+  LOL = LOL.sort(function(a,b){return a.s2 == b.s2 ? a.s0 - b.s0 : a.s2 - b.s2;});
+  _footsies(m1,m2,LOL,"#LOL3");
+}
+
+function _footsies(m1,m2,LOL,id) {
+
+  function fillclassh(i) {
     if (i == 0 || i == 12)
       return "fyellow";
     if (i == 1 || (i >= 3 && i <= 11))
       return "fblue";
-    if (i == 2 || i >= 13)
+    if (i == 2 || (i >= 13 && i <= 21))
       return "fred";
   }
+  function fillclassr(i) {
+    if (i == 0 || i == 12)
+      return "fyellow";
+    if (i == 1 || (i >= 4 && i <= 11))
+      return "fblue";
+    if (i == 2 || (i >= 13 && i <= 20))
+      return "fred";
+  }
+  
+  var color1 = d3.scale.linear()
+    .domain([-2, -0.5])
+    .range(["#003", "#006"]);
 
-  var size = 960 / 22;
+  var color2 = d3.scale.linear()
+    .domain([0.5, 2])
+    .range(["#600", "#300"]);
 
-  fsvg = d3.select("#LOL")
-    .attr("width", 960)
-    .attr("height", size*LOL.length);
+  var width = 480 * 1;
+  var size = width / 22;
+
+  var fsvg = d3.select(id)
+    .attr("width", width)
+    .attr("height", size*(LOL.length+1));
 
   fsvg.selectAll("*").remove();
 
@@ -549,17 +649,15 @@ function footsies(m1,m2) {
   var fsvgb = fsvg.append("g");
 
   fsvgh.selectAll("rect").data(H).enter().append("rect")
-    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclass(i);})
+    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclassh(i);})
     .attr("x", function(d,i) {return i*size;});
 
   fsvgh.selectAll("text").data(H).enter().append("text")
-    .attr("fill","#999")
-    .attr("text-anchor","middle")
     .attr("x", function(d,i) {return i*size+size/2;})
     .attr("y", size/2)
     .text(function(d,i) {return d.toUpperCase();});
 
-  
+
   var fsvgr = fsvgb.selectAll("g").data(LOL).enter().append("g")
                 .attr("transform", function(d,i){ return "translate(0,"+((i+1)*size)+")";});
 
@@ -568,18 +666,43 @@ function footsies(m1,m2) {
     }).enter().append("rect")
     .attr("width",size).attr("height",size)
     .attr("class",function(d,i){
-      return i < 5 || i > 19 ? fillclass(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
-    .attr("x", function(d,i) {return (i)*size;});
+      return i < 5 || i > 19 ? fillclassr(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
+    .attr("fill",function(d,i){
+      return i == 3 ? color1(d) : i == 21 ? color2(d) : "";})
+    .attr("x", function(d,i) {return (i)*size;})
+    .datum(function(d,i){return i;})
+    .on("mouseenter",function(){
+      var di = d3.select(this).datum();
+      //console.log(di);
+      if (di >= 5 && di <= 19) {
+        var d = d3.select(this.parentNode).datum();
+        shape.param("adv", 12-di);
+        shape.param("m1", d["s1"]);
+        shape.param("m2", d["s2"]);
+        shape.param("x1", d["x1"]);
+        path.attr("d", shape);
+      }
+    }).on("click",function(){
+      var di = d3.select(this).datum();
+      //console.log(di);
+      if (di >= 5 && di <= 19) {
+        var d = d3.select(this.parentNode).datum();
+        shape.param("adv", 12-di);
+        shape.param("m1", d["s1"]);
+        shape.param("m2", d["s2"]);
+        shape.param("x1", d["x1"]);
+        path.attr("d", shape);
+        d3.select("#f").select("input").node().focus();
+      }
+    });
 
 
   fsvgr.selectAll("text").data(function(d,i){
       return H.map(function(h,i){return d[h];});
     }).enter().append("text")
-    .attr("fill","#999")
-    .attr("text-anchor","middle")
     .attr("x", function(d,i) {return i*size+size/2;})
     .attr("y", size/2)
-    .text(function(d,i) {return d;});
+    .text(function(d,i) {return true || i < 5 || i > 19 ? d : "";});
 
 }
 
