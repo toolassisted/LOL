@@ -45,6 +45,12 @@ path {
 .blue { stroke: #00f; }
 .cyan { stroke: #0ff; }
 
+.p2gray { stroke: #333; }
+.p2red { stroke: #f66; }
+.p2green { stroke: #6f6; }
+.p2blue { stroke: #66f; }
+.p2cyan { stroke: #6ff; }
+
 #buttons {
   width: 70%;
   float: left;
@@ -232,11 +238,11 @@ path {
 
       frame = b2.f[f2];
       for (var c=0;c<frame.c6.length;c++) {
-        frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+        frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
         rects.push(frame.c6[c]);
       }
       for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+        frame.c5[c].c=frame.c5[c].t!=4?"p2red":"p2gray";
         rects.push(frame.c5[c]);
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
@@ -313,11 +319,11 @@ path {
 
         frame = b2.f[f2];
         for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
           rects.push(frame.c6[c]);
         }
         for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
           rects.push(frame.c5[c]);
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
