@@ -127,6 +127,23 @@ path {
       return _superformulaPath(p, segments.call(this, d, i), Math.sqrt(size.call(this, d, i)));
     }
 
+    superformula.update = function(x, d, i) {
+      var n, p = _superformulaTypes[type.call(this, d, i)];
+      for (n in params) p[n] = params[n].call(this, d, i);
+      var fpath = d3.select("#fpath").remove();
+      var fg = d3.select("#fg"+x);
+
+      if (!fg.empty()) {
+        if (fpath.empty())           
+          fg.append("path").attr("id", "fpath")
+          .attr("d", _line([[-2,0],[2,0]].map(function(p){return [p[0],p[1]];})) + "Z");
+        else
+          fg.append(function(){return fpath.node();});
+      }
+      
+      return render(p);
+    };
+
     superformula.type = function(x) {
       if (!arguments.length) return type;
       type = d3.functor(x);
@@ -181,6 +198,95 @@ path {
     // }
 
     // console.log(params);
+    if (params.f != null) {
+      render(params);
+    }
+    if (params.f != null) {
+      
+      var rects = [];
+      fg.selectAll("*").remove();
+
+      var b1 = BOXDOX[params.m1];
+      var b2 = BOXDOX[params.m2];
+      //var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+
+      for (i=0;i<30;i++) {
+
+        var f = i+2;
+
+        rects = [];
+        var dg = fg.append("g")
+                  .attr("id", "fg"+f)
+                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
+                  .datum(f)
+                  .on("mouseover",function(){
+                    var df = d3.select(this).datum();
+                    //console.log(df);
+                    if (shape.param("f")() != df) {
+                      path.attr("d", shape.param("f", df).update(df));
+                    }
+                  });
+
+        if (f == params.f) {
+          dg.append("path").attr("id", "fpath")
+          .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
+        }
+
+        dg.append("text")
+          .text(f-1)
+          .attr("fill","#999")
+          .attr("text-anchor","middle")
+          .attr("transform", "translate(0,0.5)scale(0.04)");
+
+        var f1 = f;
+        var f2 = f;
+        if (adv > 0) f2 -= adv;
+        if (adv < 0) f1 += adv;
+        if (f1 < 0) f1 = 0;
+        if (f2 < 0) f2 = 0;
+        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+        frame = b1.f[f1];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+
+        frame = b2.f[f2];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      }
+
+    }    
+    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
+  }
+
+  function render(params, n, diameter) {
+    var points = [[-2,0],[0,0],[2,0]];
     if (params.f != null) {
 
       var dg = rg;
@@ -252,89 +358,7 @@ path {
         .attr("height", function(d) { return d.rh; })
         .attr("width", function(d) { return d.rw; });
 
-    }
-    if (params.f != null) {
-      
-      var rects = [];
-      fg.selectAll("*").remove();
-
-      var b1 = BOXDOX[params.m1];
-      var b2 = BOXDOX[params.m2];
-      //var f = Math.floor(params.f);
-      var adv = Math.floor(params.adv);
-
-      for (i=0;i<30;i++) {
-
-        var f = i+2;
-
-        rects = [];
-        var dg = fg.append("g")
-                  //.attr("class", f)
-                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
-                  .datum(f)
-                  .on("mouseover",function(){
-                    var df = d3.select(this).datum();
-                    //console.log(df);
-                    if (shape.param("f")() != df) {
-                      shape.param("f", df);
-                      path.attr("d", shape);
-                    }
-                  });
-
-        if (f == params.f) {
-          dg.append("path")
-          .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
-        }
-
-        dg.append("text")
-          .text(f-1)
-          .attr("fill","#999")
-          .attr("text-anchor","middle")
-          .attr("transform", "translate(0,0.5)scale(0.04)");
-
-        var f1 = f;
-        var f2 = f;
-        if (adv > 0) f2 -= adv;
-        if (adv < 0) f1 += adv;
-        if (f1 < 0) f1 = 0;
-        if (f2 < 0) f2 = 0;
-        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
-        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
-
-        frame = b1.f[f1];
-        for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
-          rects.push(frame.c6[c]);
-        }
-        for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
-          rects.push(frame.c5[c]);
-        }
-        dg.selectAll("rect").data(rects).enter().append("rect")
-          .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
-          .attr("y", function(d) { return -d.ry-d.rh; })
-          .attr("height", function(d) { return d.rh; })
-          .attr("width", function(d) { return d.rw; });
-
-        frame = b2.f[f2];
-        for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
-          rects.push(frame.c6[c]);
-        }
-        for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
-          rects.push(frame.c5[c]);
-        }
-        dg.selectAll("rect").data(rects).enter().append("rect")
-          .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
-          .attr("y", function(d) { return -d.ry-d.rh; })
-          .attr("height", function(d) { return d.rh; })
-          .attr("width", function(d) { return d.rw; });
-      }
-
-    }    
+    } 
     return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
   }
 
@@ -465,7 +489,10 @@ control.append("input")
     .on("input", function(d) {
       var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
-      path.attr("d", shape.param(d.key, v));
+      if (d.key == "f")
+        path.attr("d", shape.param(d.key, v).update(v));
+      else
+        path.attr("d", shape.param(d.key, v));
       d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
 
