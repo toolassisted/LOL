@@ -656,6 +656,17 @@ function footsies(m1,m2) {
         shape.param("x1", d["x1"]);
         path.attr("d", shape);
       }
+    }).on("click",function(){
+      var di = d3.select(this).datum();
+      //console.log(di);
+      if (di >= 5 && di <= 19) {
+        var d = d3.select(this.parentNode).datum();
+        shape.param("adv", 12-di);
+        shape.param("m1", d["s1"]);
+        shape.param("m2", d["s2"]);
+        shape.param("x1", d["x1"]);
+        path.attr("d", shape);
+      }
     });
 
 
