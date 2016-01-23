@@ -226,6 +226,9 @@ path {
                     if (shape.param("f")() != df) {
                       path.attr("d", shape.param("f", df).update(df));
                     }
+                  })
+                  .on("click",function(){
+                    d3.select("#f").select("input").node().focus();
                   });
 
         if (f == params.f) {
@@ -314,14 +317,14 @@ path {
 
       frame = b1.f[f1];
       dg.append("text")
-        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .text(formatadv( params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
         .attr("fill","#999")
         .attr("text-anchor","middle")
         .attr("transform", "translate(-2,0.2)scale(0.015)");
 
       frame = b2.f[f2];
       dg.append("text")
-        .text(frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
+        .text(formatadv(-params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":""))
         .attr("fill","#999")
         .attr("text-anchor","middle")
         .attr("transform", "translate(2,0.2)scale(0.015)");
@@ -416,6 +419,7 @@ var types = {
 };
 
 var format = d3.format(".4n");
+var formatadv = d3.format("+");
 
 function formatkv(k,v) {
   if (k == "m1" || k == "m2")        
@@ -489,6 +493,11 @@ control.append("input")
     .on("input", function(d) {
       var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
+      if (d.key == "m1")
+        footsies(v,d3.select("#m2").select("input").property("value"));
+      else if (d.key == "m2")
+        footsies(d3.select("#m1").select("input").property("value"),v);
+
       if (d.key == "f")
         path.attr("d", shape.param(d.key, v).update(v));
       else
@@ -520,6 +529,38 @@ d3.select("#f").select("input").attr("max", 50);
 //       path.attr("d", shape);
 //     });
 
+function mclick(d) {
+  // for (var param in d.value) {
+  //   var control = d3.select("#" + param);
+  //   control.select("input").property("value", scale(d.value[param]));
+  //   control.select("span").text(format(d.value[param]));
+  //   shape.param(param, d.value[param]);
+  // }
+  var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
+  if (d.value.p == 0) {
+    value["m1"] = d.value.i;
+    value["m2"] = d3.select("#m2").select("input").property("value");
+    d3.select("#m1").select("input").node().focus();
+  } else if (d.value.p == 1) {
+    value["m1"] = d3.select("#m1").select("input").property("value");
+    value["m2"] = d.value.i;
+    d3.select("#m2").select("input").node().focus();
+  }
+
+  for (var param in value) {
+    var control = d3.select("#" + param);
+    var v = value[param];
+    control.select("input").property("value", scale(value[param]));
+    control.select("span").text(formatkv(param, v));
+    shape.param(param, value[param]);
+  }
+  d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
+  d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
+  d3.select("#f").select("input").attr("max", Math.max(BOXDOX[value.m1].f.length,BOXDOX[value.m2].f.length)-1);
+  path.attr("d", shape);
+  footsies(value.m1,value.m2);
+}
+
 var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
   .append("div").attr("class","buttons");
 
@@ -531,35 +572,7 @@ var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
     })
   .enter().append("button")
     .text(function(d) { return d.value.c + " " + d.value.m; })
-    .on("click", function(d) {
-      // for (var param in d.value) {
-      //   var control = d3.select("#" + param);
-      //   control.select("input").property("value", scale(d.value[param]));
-      //   control.select("span").text(format(d.value[param]));
-      //   shape.param(param, d.value[param]);
-      // }
-      var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
-      if (d.value.p == 0) {
-        value["m1"] = d.value.i;
-        value["m2"] = d3.select("#m2").select("input").property("value");
-      } else if (d.value.p == 1) {
-        value["m1"] = d3.select("#m1").select("input").property("value");
-        value["m2"] = d.value.i;
-      }
-
-      for (var param in value) {
-        var control = d3.select("#" + param);
-        var v = value[param];
-        control.select("input").property("value", scale(value[param]));
-        control.select("span").text(formatkv(param, v));
-        shape.param(param, value[param]);
-      }
-      d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-      d3.select("#f").select("input").attr("max", d.value.f.length-1);
-      path.attr("d", shape);
-      footsies(value.m1,value.m2);
-    });    
+    .on("click", mclick);    
 
 shape();
 
@@ -666,6 +679,7 @@ function footsies(m1,m2) {
         shape.param("m2", d["s2"]);
         shape.param("x1", d["x1"]);
         path.attr("d", shape);
+        d3.select("#f").select("input").node().focus();
       }
     });
 
