@@ -98,6 +98,10 @@ path {
   font: 8px sans-serif;
 }
 
+.LOL rect:hover {
+  stroke: #fff;
+}
+
 #svg {
   text-align: center;
 }
@@ -109,7 +113,7 @@ path {
 <div id="controls"></div>
 <div id="svg"></div>
 <script src="d3.min.js"></script>
-<script src="LOL.JSON"></script>
+<script src="LOL_NSH_VEG.JSON"></script>
 <script>
 (function() {
   var _symbol = d3.svg.symbol(),
@@ -586,7 +590,11 @@ var fsvg1 = d3.select("#svg")
 //               .attr("width", 480)
 //               .attr("height", 500);
 
-var LOL = [];
+// var fsvg3 = d3.select("#svg")
+//             .append("svg").attr("id","LOL3").attr("class","LOL")
+//               .attr("width", 480)
+//               .attr("height", 500);
+
 var FOOTSIES = [];
 var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
 d3.tsv("LOL.TSV",function(error,rows){
@@ -595,8 +603,17 @@ d3.tsv("LOL.TSV",function(error,rows){
 });
 
 function footsies(m1,m2) {
+  var LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
+  _footsies(m1,m2,LOL,"#LOL1");
 
-  LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
+  // LOL = FOOTSIES.filter(function(row){return row["s1"] == m1});
+  // _footsies(m1,m2,LOL,"#LOL2");
+
+  // LOL = LOL.sort(function(a,b){return a.s2 == b.s2 ? a.s0 - b.s0 : a.s2 - b.s2;});
+  // _footsies(m1,m2,LOL,"#LOL3");
+}
+
+function _footsies(m1,m2,LOL,id) {
 
   function fillclassh(i) {
     if (i == 0 || i == 12)
@@ -626,7 +643,7 @@ function footsies(m1,m2) {
   var width = 480 * 1;
   var size = width / 22;
 
-  var fsvg = d3.selectAll(".LOL")
+  var fsvg = d3.select(id)
     .attr("width", width)
     .attr("height", size*(LOL.length+1));
 
