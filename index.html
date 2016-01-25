@@ -128,12 +128,17 @@
     padding: 5px;
     margin: 5px;
     width: 10%;
+    background-color: #999;
+  }
+  button.SEL {
+    background-color: #eee;
   }
   button.MOVE {
     padding: 7px;
     margin: 3px;
     /*width: 5%;*/
     /*font-size: 10px;*/
+    background-color: #eee;
   }  
   button.MOVE:nth-of-type(3), button.MOVE:nth-of-type(6) {
     margin-right: 10px;
@@ -173,7 +178,12 @@
 
   var CDIV = d3.selectAll(".CHARS").datum(function(d,i){return i+1;});
   CDIV.selectAll("button").data(CHARS).enter().append("button").attr("class","CHAR")
-      .on("click",function(d,i){cload(d,d3.select(this.parentNode).datum());})
+      .on("click",function(d,i){
+        var p = d3.select(this.parentNode).datum();
+        d3.select("#P"+p).selectAll(".CHAR").classed("SEL",false);
+        d3.select(this).classed("SEL",true);
+        cload(d,p);
+      })
       .text(function(d,i){return d;});
 
   var MDIV = d3.selectAll(".MOVES").datum(function(d,i){return i+1;});
