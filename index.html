@@ -130,9 +130,6 @@
     width: 10%;
     background-color: #999;
   }
-  button.SEL {
-    background-color: #eee;
-  }
   button.MOVE {
     padding: 7px;
     margin: 3px;
@@ -145,6 +142,9 @@
   }
   button.DUP {
     background-color: #999;
+  }
+  button.SEL {
+    background-color: #ffc;
   }
 
   .MOVES {
@@ -191,6 +191,9 @@
       .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP"})
       .on("click", function(d,i) { 
         var p = d3.select(this.parentNode.parentNode).datum();
+
+        d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
+        d3.select(this).classed("SEL",true);
         // console.log(p,d,i);
         var m = BOXDOX[p].filter(function(e,i){ return e.p == p-1 && e.m == d;});
         var s0 = m[0].f[2].s0;
