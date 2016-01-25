@@ -326,7 +326,7 @@
         rects.push(frame.c6[c]);
       }
       for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"red":"gray";
+        frame.c5[c].c=(frame.c5[c].t!=4 && frame.c5[c].t!=3)?"red":"gray";
         rects.push(frame.c5[c]);
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
@@ -342,7 +342,7 @@
         rects.push(frame.c6[c]);
       }
       for (var c=0;c<frame.c5.length;c++) {
-        frame.c5[c].c=frame.c5[c].t!=4?"p2red":"p2gray";
+        frame.c5[c].c=(frame.c5[c].t!=4 && frame.c5[c].t!=3)?"p2red":"p2gray";
         rects.push(frame.c5[c]);
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
@@ -416,7 +416,7 @@
           rects.push(frame.c6[c]);
         }
         for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          frame.c5[c].c=(frame.c5[c].t!=4 && frame.c5[c].t!=3)?"red":"";
           rects.push(frame.c5[c]);
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
@@ -432,7 +432,7 @@
           rects.push(frame.c6[c]);
         }
         for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
+          frame.c5[c].c=(frame.c5[c].t!=4 && frame.c5[c].t!=3)?"p2red":"";
           rects.push(frame.c5[c]);
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
