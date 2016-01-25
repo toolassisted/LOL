@@ -462,18 +462,12 @@ var svg = d3.select("#svg")
     .attr("width", 960)
     .attr("height", 500);
 
-var shape = d3.superformula()
-    .type("asterisk")
-    .size(100000)
-    .segments(3600);
-
 var defaults = {m1:3,m2:38+3,adv:0,x1:-1.5,f:6};
 
 var path = svg.append("path")
     .attr("class", "big")
     .attr("transform", "translate(480,250)scale(100)")
-    .attr("d", shape);
-
+    .attr("d", d3.svg.line()([[-2,0],[0,0],[2,0]].map(function(p){return [p[0],p[1]];})) + "Z");
 
 var rg = svg.append("g")
     .attr("class", "big")
