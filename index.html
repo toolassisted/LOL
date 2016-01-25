@@ -5,294 +5,268 @@
 <title>SFV FOOTSIES LOL</title>
 <style>
 
-body {
-  background-color: #000;
-  color: #fff;
-}
+  body {
+    background-color: #000;
+    color: #fff;
+  }
 
-path {
-  stroke-width: 1px;
-  stroke: #333;
-  fill: #ddd;
-  vector-effect: non-scaling-stroke;
-}
+  path {
+    stroke-width: 1px;
+    stroke: #333;
+    fill: #ddd;
+    vector-effect: non-scaling-stroke;
+  }
 
-#BOXDOX rect {
-  stroke-width: 1px;
-  /*stroke: #333;*/
-  fill: none;
-  /*opacity: 0.8;*/
-  mix-blend-mode: screen;
-  vector-effect: non-scaling-stroke;
-}
+  #BOXDOX rect {
+    stroke-width: 1px;
+    /*stroke: #333;*/
+    fill: none;
+    /*opacity: 0.8;*/
+    mix-blend-mode: screen;
+    vector-effect: non-scaling-stroke;
+  }
 
-.fgray { fill: #111;}
-.fred { fill: #300; }
-.fgreen { fill: #030; }
-.fblue { fill: #003; }
-.fcyan { fill: #033; }
-.fyellow { fill: #330; }
+  .fgray { fill: #111;}
+  .fred { fill: #300; }
+  .fgreen { fill: #030; }
+  .fblue { fill: #003; }
+  .fcyan { fill: #033; }
+  .fyellow { fill: #330; }
 
-.hred { fill: #600; }
-.hgreen { fill: #060; }
-.hblue { fill: #006; }
-.hcyan { fill: #066; }
-.hyellow { fill: #660; }
+  .hred { fill: #600; }
+  .hgreen { fill: #060; }
+  .hblue { fill: #006; }
+  .hcyan { fill: #066; }
+  .hyellow { fill: #660; }
 
-.gray { stroke: #333; }
-.red { stroke: #f00; }
-.green { stroke: #0f0; }
-.blue { stroke: #00f; }
-.cyan { stroke: #0ff; }
+  .gray { stroke: #333; }
+  .red { stroke: #f00; }
+  .green { stroke: #0f0; }
+  .blue { stroke: #00f; }
+  .cyan { stroke: #0ff; }
 
-.p2gray { stroke: #333; }
-.p2red { stroke: #f66; }
-.p2green { stroke: #6f6; }
-.p2blue { stroke: #66f; }
-.p2cyan { stroke: #6ff; }
+  .p2gray { stroke: #333; }
+  .p2red { stroke: #f66; }
+  .p2green { stroke: #6f6; }
+  .p2blue { stroke: #66f; }
+  .p2cyan { stroke: #6ff; }
 
-#buttons {
-  width: 70%;
-  float: left;
-  padding-left: 5%;
-}
+  #buttons {
+    width: 70%;
+    float: left;
+    padding-left: 5%;
+  }
 
-#controls {
-  width: 25%;
-  float: left;
-}
+  #controls {
+    width: 100%;
+    /*float: left;*/
+    margin-top: 10px;
+  }
 
-#controls div{
-  white-space: nowrap;
-}
+  #controls div{
+    white-space: nowrap;
+    display: inline-block;
+  }
 
-#controls, #buttons, #BOXDOX text {
-  /*position: absolute;*/
-  /*width: 240px*/;
-  font: 10px sans-serif;
-}
+  #controls, #buttons, #BOXDOX text {
+    /*position: absolute;*/
+    /*width: 240px*/;
+    font: 10px sans-serif;
+  }
 
-#controls span, #buttons span,
-#controls label, #buttons label {
-  position: relative;
-  top: -5px;
-  padding: 5px;
-  display: inline-block;
-  width: 20px;
-}
+  #controls span, #buttons span,
+  #controls label, #buttons label {
+    position: relative;
+    top: -5px;
+    padding: 5px;
+    display: inline-block;
+    width: 20px;
+  }
 
-#buttons button {
-  font: 10px sans-serif;
-  padding: 5px;
-  width: 70px;
-}
+  #buttons button {
+    font: 10px sans-serif;
+    padding: 5px;
+    width: 70px;
+  }
 
-#buttons .buttons {
-  width: 50%;
-  float: left;
-}
+  #buttons .buttons {
+    width: 50%;
+    float: left;
+  }
 
-.LOL text {
-  text-anchor: middle;
-  fill: #999;
-  font: 8px sans-serif;
-}
+  .LOL text {
+    text-anchor: middle;
+    fill: #999;
+    font: 8px sans-serif;
+  }
 
-.LOL rect:hover {
-  stroke: #fff;
-}
+  .LOL rect:hover {
+    stroke: #fff;
+  }
 
-#svg {
-  text-align: center;
-}
+  #svg {
+    text-align: center;
+  }
+</style>
+<style type="text/css">
 
+  div#PLAYERS {
+    width: 100%;
+    text-align: center;
+  }
+  div.PLAYER {
+    width: 45%;
+    display: inline-block;
+  }
+
+  .MOVES div:nth-of-type(2), .MOVES div:nth-of-type(4) {
+    padding-top: 10px;
+  }
+
+
+  button.CHAR {
+    padding: 5px;
+    margin: 5px;
+    width: 10%;
+  }
+  button.MOVE {
+    padding: 7px;
+    margin: 3px;
+    /*width: 5%;*/
+    /*font-size: 10px;*/
+  }  
+  button.MOVE:nth-of-type(3), button.MOVE:nth-of-type(6) {
+    margin-right: 10px;
+  }
+  button.DUP {
+    background-color: #999;
+  }
+
+  .MOVES {
+    padding-top: 10px;
+  }
 </style>
 </head>
 <body>
-<div id="buttons"></div>
+<div id="PLAYERS">
+<div id="P1" class="PLAYER"><div class="CHARS"></div><div class="MOVES"></div></div>
+<div id="P2" class="PLAYER"><div class="CHARS"></div><div class="MOVES"></div></div>
 <div id="controls"></div>
+</div>
 <div id="svg"></div>
+
 <script src="d3.min.js"></script>
-<script src="LOL.JSON"></script>
 <script>
-(function() {
-  var _symbol = d3.svg.symbol(),
-      _line = d3.svg.line();
 
-  d3.superformula = function() {
-    var type = _symbol.type(),
-        size = _symbol.size(),
-        segments = size,
-        params = {};
+  var BOXDOX = [[],[],[]];
+  var CHARS = [
+  "BLR", "BLR2", "BRD", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN", "LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF",
+  ];
+  var MOVES = [
+  ["4T", "5T"],
+  ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
+  ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
+  ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
+  ["1LK", "1MK", "1HK", "2LK", "2MK", "2HK", "3LK", "3MK", "3HK"],
 
-    function superformula(d, i) {
-      var n, p = _superformulaTypes[type.call(this, d, i)];
-      for (n in params) p[n] = params[n].call(this, d, i);
-      return _superformulaPath(p, segments.call(this, d, i), Math.sqrt(size.call(this, d, i)));
-    }
+  ];
 
-    superformula.update = function(x, d, i) {
-      var n, p = _superformulaTypes[type.call(this, d, i)];
-      for (n in params) p[n] = params[n].call(this, d, i);
-      var fpath = d3.select("#fpath").remove();
-      var fg = d3.select("#fg"+x);
+  var CDIV = d3.selectAll(".CHARS").datum(function(d,i){return i+1;});
+  CDIV.selectAll("button").data(CHARS).enter().append("button").attr("class","CHAR")
+      .on("click",function(d,i){cload(d,d3.select(this.parentNode).datum());})
+      .text(function(d,i){return d;});
 
-      if (!fg.empty()) {
-        if (fpath.empty())           
-          fg.append("path").attr("id", "fpath")
-          .attr("d", _line([[-2,0],[2,0]].map(function(p){return [p[0],p[1]];})) + "Z");
-        else
-          fg.append(function(){return fpath.node();});
-      }
-      
-      return render(p);
-    };
-
-    superformula.type = function(x) {
-      if (!arguments.length) return type;
-      type = d3.functor(x);
-      return superformula;
-    };
-
-    superformula.param = function(name, value) {
-      if (arguments.length < 2) return params[name];
-      params[name] = d3.functor(value);
-      return superformula;
-    };
-
-    // size of superformula in square pixels
-    superformula.size = function(x) {
-      if (!arguments.length) return size;
-      size = d3.functor(x);
-      return superformula;
-    };
-
-    // number of discrete line segments
-    superformula.segments = function(x) {
-      if (!arguments.length) return segments;
-      segments = d3.functor(x);
-      return superformula;
-    };
-
-    return superformula;
-  };
-
-  function _superformulaPath(params, n, diameter) {
-    var i = -1,
-        dt = 2 * Math.PI / n,
-        t,
-        r = 0,
-        //x,
-        y,
-        points = [[-2,0],[0,0],[2,0]];
-
-    // while (++i < n) {
-    //   t = params.m * (i * dt - Math.PI) / 4;
-    //   t = Math.pow(Math.abs(Math.pow(Math.abs(Math.cos(t) / params.a), params.n2)
-    //     + Math.pow(Math.abs(Math.sin(t) / params.b), params.n3)), -1 / params.n1);
-    //   if (t > r) r = t;
-    //   points.push(t);
-    // }
-
-    // r = diameter * Math.SQRT1_2 / r;
-    // i = -1; while (++i < n) {
-    //   x = (t = points[i] * r) * Math.cos(i * dt);
-    //   y = t * Math.sin(i * dt);
-    //   points[i] = [Math.abs(x) < 1e-6 ? 0 : x, Math.abs(y) < 1e-6 ? 0 : y];
-    // }
-
-    // console.log(params);
-    if (params.f != null) {
-      render(params);
-    }
-    if (params.f != null) {
-      
-      var rects = [];
-      fg.selectAll("*").remove();
-
-      var b1 = BOXDOX[params.m1];
-      var b2 = BOXDOX[params.m2];
-      //var f = Math.floor(params.f);
-      var adv = Math.floor(params.adv);
-
-      for (i=0;i<30;i++) {
-
-        var f = i+2;
-
-        rects = [];
-        var dg = fg.append("g")
-                  .attr("id", "fg"+f)
-                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
-                  .datum(f)
-                  .on("mouseover",function(){
-                    var df = d3.select(this).datum();
-                    //console.log(df);
-                    if (shape.param("f")() != df) {
-                      path.attr("d", shape.param("f", df).update(df));
-                    }
-                  })
-                  .on("click",function(){
-                    d3.select("#f").select("input").node().focus();
-                  });
-
-        if (f == params.f) {
-          dg.append("path").attr("id", "fpath")
-          .attr("d", _line(points.map(function(p){return [p[0],p[1]];})) + "Z");
+  var MDIV = d3.selectAll(".MOVES").datum(function(d,i){return i+1;});
+  MDIV.selectAll("div").data(MOVES).enter().append("div").attr("class","DIR")
+      .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP"})
+      .on("click", function(d,i) { 
+        var p = d3.select(this.parentNode.parentNode).datum();
+        // console.log(p,d,i);
+        var m = BOXDOX[p].filter(function(e,i){ return e.p == p-1 && e.m == d;});
+        var s0 = m[0].f[2].s0;
+        if (s0 == 0) {
+          s0f = m[0].f.filter(function(e,i){ return e.c5.filter(function(c){ return c.t!=4; }).length > 0; });
+          if (s0f.length>0) s0 = s0f[0].sf;
         }
+        d3.select("#m"+p).select("input").property("value", m[0].i);
+        d3.select("#f").select("input").property("value", s0+2);
+        d3.select("#f").select("input").node().focus();
+        render(rparams());
 
-        dg.append("text")
-          .text(f-1)
-          .attr("fill","#999")
-          .attr("text-anchor","middle")
-          .attr("transform", "translate(0,0.5)scale(0.04)");
+      } )
+      .text(function(d,i){return d;})
 
-        var f1 = f;
-        var f2 = f;
-        if (adv > 0) f2 -= adv;
-        if (adv < 0) f1 += adv;
-        if (f1 < 0) f1 = 0;
-        if (f2 < 0) f2 = 0;
-        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
-        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+  function cload(c,p) {
 
-        frame = b1.f[f1];
-        for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
-          rects.push(frame.c6[c]);
-        }
-        for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
-          rects.push(frame.c5[c]);
-        }
-        dg.selectAll("rect").data(rects).enter().append("rect")
-          .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
-          .attr("y", function(d) { return -d.ry-d.rh; })
-          .attr("height", function(d) { return d.rh; })
-          .attr("width", function(d) { return d.rw; });
+    console.log(c,p);
 
-        frame = b2.f[f2];
-        for (var c=0;c<frame.c6.length;c++) {
-          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
-          rects.push(frame.c6[c]);
-        }
-        for (var c=0;c<frame.c5.length;c++) {
-          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
-          rects.push(frame.c5[c]);
-        }
-        dg.selectAll("rect").data(rects).enter().append("rect")
-          .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
-          .attr("y", function(d) { return -d.ry-d.rh; })
-          .attr("height", function(d) { return d.rh; })
-          .attr("width", function(d) { return d.rw; });
+    d3.text("LOL_"+c+"_"+c+".json", function(error,data) {
+
+      if (error!=null) return;
+
+      BOXDOX[p] = eval(data);
+      if (BOXDOX[1].length == 0) BOXDOX[1] = BOXDOX[p];
+      if (BOXDOX[2].length == 0) BOXDOX[2] = BOXDOX[p];
+      render(rparams());
+
+      var dup = [];
+      var mb = {};
+      var mblen = 0;
+      BOXDOX[p].forEach(function(m,mi){
+        // if (m.f[0].sf != 17) console.log(m);
+        if (dup.indexOf(m.f[2].s) >= 0) ;//console.log(m);
+        else dup.push(m.f[2].s);
+
+        if (mb[m.f[2].s] && mb[m.f[2].s].indexOf(m.m) < 0) { mb[m.f[2].s].push(m.m); mblen++; }
+        else { mb[m.f[2].s] = [m.m]; mblen++; }
+      });
+
+      for (var key in mb) {
+        var m = mb[key]
+        // console.log(key, m);
+        m.forEach(function(b,bi){
+          if (bi==0) { d3.select("#P"+p).selectAll(".MOVE"+b).classed("DUP",false); }
+          else { d3.select("#P"+p).selectAll(".MOVE"+b).classed("DUP",true); }
+        });
       }
 
-    }    
-    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
+    });
+
   }
 
-  function render(params, n, diameter) {
+  function rparams() {
+
+    return {
+        m1: d3.select("#m1").select("input").property("value"), 
+        m2: d3.select("#m2").select("input").property("value"), 
+        adv: d3.select("#adv").select("input").property("value"), 
+        x1: d3.select("#x1").select("input").property("value"), 
+        f: d3.select("#f").select("input").property("value"), 
+        };
+  }
+
+  function update(f) {
+    var fpath = d3.select("#fpath").remove();
+    var fg = d3.select("#fg"+f);
+
+    if (!fg.empty()) {
+      if (fpath.empty())           
+        fg.append("path").attr("id", "fpath")
+        .attr("d", d3.svg.line()([[-2,0],[2,0]].map(function(p){return [p[0],p[1]];})) + "Z");
+      else
+        fg.append(function(){return fpath.node();});
+    }
+
+    stage({
+      m1: d3.select("#m1").select("input").property("value"), 
+      m2: d3.select("#m2").select("input").property("value"), 
+      adv: d3.select("#adv").select("input").property("value"), 
+      x1: d3.select("#x1").select("input").property("value"), 
+      f: f, 
+    });
+  };
+
+  function stage(params) {
     var points = [[-2,0],[0,0],[2,0]];
     if (params.f != null) {
 
@@ -300,8 +274,8 @@ path {
       var rects = [];
       dg.selectAll("*").remove();
 
-      var b1 = BOXDOX[params.m1];
-      var b2 = BOXDOX[params.m2];
+      var b1 = BOXDOX[1][params.m1];
+      var b2 = BOXDOX[2][params.m2];
       var f = Math.floor(params.f);
       var adv = Math.floor(params.adv);
       var f1 = f;
@@ -366,68 +340,109 @@ path {
         .attr("width", function(d) { return d.rw; });
 
     } 
-    return _line(points.map(function(p){return [p[0],p[1]];})) + "Z";
+    return d3.svg.line()(points.map(function(p){return [p[0],p[1]];})) + "Z";
   }
 
-  var _superformulaTypes = {
-    asterisk: {m: 12, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
-    bean: {m: 2, n1: 1, n2: 4, n3: 8, a: 1, b: 1},
-    butterfly: {m: 3, n1: 1, n2: 6, n3: 2, a: .6, b: 1},
-    circle: {m: 4, n1: 2, n2: 2, n3: 2, a: 1, b: 1},
-    clover: {m: 6, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
-    cloverFour: {m: 8, n1: 10, n2: -1, n3: -8, a: 1, b: 1},
-    cross: {m: 8, n1: 1.3, n2: .01, n3: 8, a: 1, b: 1},
-    diamond: {m: 4, n1: 1, n2: 1, n3: 1, a: 1, b: 1},
-    drop: {m: 1, n1: .5, n2: .5, n3: .5, a: 1, b: 1},
-    ellipse: {m: 4, n1: 2, n2: 2, n3: 2, a: 9, b: 6},
-    gear: {m: 19, n1: 100, n2: 50, n3: 50, a: 1, b: 1},
-    heart: {m: 1, n1: .8, n2: 1, n3: -8, a: 1, b: .18},
-    heptagon: {m: 7, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
-    hexagon: {m: 6, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
-    malteseCross: {m: 8, n1: .9, n2: .1, n3: 100, a: 1, b: 1},
-    pentagon: {m: 5, n1: 1000, n2: 600, n3: 600, a: 1, b: 1},
-    rectangle: {m: 4, n1: 100, n2: 100, n3: 100, a: 2, b: 1},
-    roundedStar: {m: 5, n1: 2, n2: 7, n3: 7, a: 1, b: 1},
-    square: {m: 4, n1: 100, n2: 100, n3: 100, a: 1, b: 1},
-    star: {m: 5, n1: 30, n2: 100, n3: 100, a: 1, b: 1},
-    triangle: {m: 3, n1: 100, n2: 200, n3: 200, a: 1, b: 1}
-  };
+  function render(params) {
+    var i = -1, points = [[-2,0],[0,0],[2,0]];
 
-  d3.superformulaTypes = d3.keys(_superformulaTypes);
-})();
+    if (params.f != null) {
+      stage(params);
+    }
+    if (params.f != null) {
+      
+      var rects = [];
+      fg.selectAll("*").remove();
+
+      var b1 = BOXDOX[1][params.m1];
+      var b2 = BOXDOX[2][params.m2];
+      //var f = Math.floor(params.f);
+      var adv = Math.floor(params.adv);
+
+      for (i=0;i<30;i++) {
+
+        var f = i+2;
+
+        rects = [];
+        var dg = fg.append("g")
+                  .attr("id", "fg"+f)
+                  .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
+                  .datum(f)
+                  .on("mouseover",function(){
+                    var df = d3.select(this).datum();
+                    //console.log(df);
+                    update(df);
+                  })
+                  .on("click",function(){
+                    d3.select("#f").select("input").node().focus();
+                  });
+
+        if (f == params.f) {
+          dg.append("path").attr("id", "fpath")
+          .attr("d", d3.svg.line()(points.map(function(p){return [p[0],p[1]];})) + "Z");
+        }
+
+        dg.append("text")
+          .text(f-1)
+          .attr("fill","#999")
+          .attr("text-anchor","middle")
+          .attr("transform", "translate(0,0.5)scale(0.04)");
+
+        var f1 = f;
+        var f2 = f;
+        if (adv > 0) f2 -= adv;
+        if (adv < 0) f1 += adv;
+        if (f1 < 0) f1 = 0;
+        if (f2 < 0) f2 = 0;
+        if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+        if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+        frame = b1.f[f1];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"blue":"cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+
+        frame = b2.f[f2];
+        for (var c=0;c<frame.c6.length;c++) {
+          frame.c6[c].c=frame.c6[c].t!=4?"p2blue":"p2cyan";
+          rects.push(frame.c6[c]);
+        }
+        for (var c=0;c<frame.c5.length;c++) {
+          frame.c5[c].c=frame.c5[c].t!=4?"p2red":"";
+          rects.push(frame.c5[c]);
+        }
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      }
+
+    }    
+    return d3.svg.line()(points.map(function(p){return [p[0],p[1]];})) + "Z";
+  }
+
 </script>
 <script>
-
-var types = {
-  asterisk: {m: 12, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
-  bean: {m: 2, n1: 1, n2: 4, n3: 8, a: 1, b: 1},
-  butterfly: {m: 3, n1: 1, n2: 6, n3: 2, a: .6, b: 1},
-  circle: {m: 4, n1: 2, n2: 2, n3: 2, a: 1, b: 1},
-  clover: {m: 6, n1: .3, n2: 0, n3: 10, a: 1, b: 1},
-  cloverFour: {m: 8, n1: 10, n2: -1, n3: -8, a: 1, b: 1},
-  cross: {m: 8, n1: 1.3, n2: .01, n3: 8, a: 1, b: 1},
-  diamond: {m: 4, n1: 1, n2: 1, n3: 1, a: 1, b: 1},
-  drop: {m: 1, n1: .5, n2: .5, n3: .5, a: 1, b: 1},
-  ellipse: {m: 4, n1: 2, n2: 2, n3: 2, a: 9, b: 6},
-  gear: {m: 19, n1: 100, n2: 50, n3: 50, a: 1, b: 1},
-  heart: {m: 1, n1: .8, n2: 1, n3: -8, a: 1, b: .18},
-  heptagon: {m: 7, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
-  hexagon: {m: 6, n1: 1000, n2: 400, n3: 400, a: 1, b: 1},
-  malteseCross: {m: 8, n1: .9, n2: .1, n3: 100, a: 1, b: 1},
-  pentagon: {m: 5, n1: 1000, n2: 600, n3: 600, a: 1, b: 1},
-  rectangle: {m: 4, n1: 100, n2: 100, n3: 100, a: 2, b: 1},
-  roundedStar: {m: 5, n1: 2, n2: 7, n3: 7, a: 1, b: 1},
-  square: {m: 4, n1: 100, n2: 100, n3: 100, a: 1, b: 1},
-  star: {m: 5, n1: 30, n2: 100, n3: 100, a: 1, b: 1},
-  triangle: {m: 3, n1: 100, n2: 200, n3: 200, a: 1, b: 1}
-};
 
 var format = d3.format(".4n");
 var formatadv = d3.format("+");
 
 function formatkv(k,v) {
   if (k == "m1" || k == "m2")        
-    return v + " " + BOXDOX[v].m;
+    return v; // + " " + BOXDOX[v].m;
   else if (k == "f")
     return v-1;
   else if (k == "adv")
@@ -452,7 +467,7 @@ var shape = d3.superformula()
     .size(100000)
     .segments(3600);
 
-var defaults = {m1:3,m2:20,adv:0,x1:-1.0,f:6};
+var defaults = {m1:3,m2:38+3,adv:0,x1:-1.5,f:6};
 
 var path = svg.append("path")
     .attr("class", "big")
@@ -468,19 +483,11 @@ var fg = svg.append("g")
     //.attr("class", "big")
     //.attr("transform", "translate(960,250)scale(50)");    
 
-// var control = d3.select("#controls")
-//   .selectAll("div")
-//     .data(d3.entries(types.asterisk))
-//   .enter().append("div")
-//     .attr("id", function(d) { return d.key; });
-
 var control = d3.select("#controls")
   .selectAll("div")
     .data(d3.entries(defaults))
   .enter().append("div")
     .attr("id", function(d) { return d.key; });
-
-control.each(function(d){shape.param(d.key, d.value);});
 
 control.append("label")
     .text(function(d) { return d.key.toUpperCase(); });
@@ -488,227 +495,35 @@ control.append("label")
 control.append("input")
     .attr("type", "range")
     .attr("max", 100)
-    .attr("min", 0)
-    .attr("step", 1)
+    .attr("min", -110)
+    .attr("step", 0.05)
     .attr("value", function(d) { 
-      return scale(d.value); })
+      return (d.value); })
     .property("value", function(d) { 
-      return scale(d.value); })
+      return (d.value); })
     .on("input", function(d) {
       var v = this.value; //scale.invert(this.value);
       //var v = scale(this.value);
-      if (d.key == "m1")
-        footsies(v,d3.select("#m2").select("input").property("value"));
-      else if (d.key == "m2")
-        footsies(d3.select("#m1").select("input").property("value"),v);
-
+      // if (d.key == "m1")
+      //   footsies(v,d3.select("#m2").select("input").property("value"));
+      // else if (d.key == "m2")
+      //   footsies(d3.select("#m1").select("input").property("value"),v);
       if (d.key == "f")
-        path.attr("d", shape.param(d.key, v).update(v));
+        stage(rparams());
       else
-        path.attr("d", shape.param(d.key, v));
+        render(rparams());
+
       d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
 
 control.append("span")
     .text(function(d) { return formatkv(d.key, d.value); });
 
-d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
-d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-d3.select("#x1").select("input").attr("min", -2).attr("max", -0.5).attr("step", 0.05);
+d3.select("#m1").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
+d3.select("#m2").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
+d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 0.05);
 d3.select("#adv").select("input").attr("min", -7).attr("max", 7).attr("step", 1).style("transform","rotateY(180deg)");
-d3.select("#f").select("input").attr("max", 50);
-// d3.select("#controls")
-//   .append("div")
-//   .selectAll("button")
-//     .data(d3.entries(types))
-//   .enter().append("button")
-//     .text(function(d) { return d.key; })
-//     .on("click", function(d) {
-//       for (var param in d.value) {
-//         var control = d3.select("#" + param);
-//         control.select("input").property("value", scale(d.value[param]));
-//         control.select("span").text(format(d.value[param]));
-//         shape.param(param, d.value[param]);
-//       }
-//       path.attr("d", shape);
-//     });
-
-function mclick(d) {
-  // for (var param in d.value) {
-  //   var control = d3.select("#" + param);
-  //   control.select("input").property("value", scale(d.value[param]));
-  //   control.select("span").text(format(d.value[param]));
-  //   shape.param(param, d.value[param]);
-  // }
-  var value = {m1: 0, m2: 0, adv: shape.param("adv")(), x1: shape.param("x1")(), f: shape.param("f")()};
-  if (d.value.p == 0) {
-    value["m1"] = d.value.i;
-    value["m2"] = d3.select("#m2").select("input").property("value");
-    d3.select("#m1").select("input").node().focus();
-  } else if (d.value.p == 1) {
-    value["m1"] = d3.select("#m1").select("input").property("value");
-    value["m2"] = d.value.i;
-    d3.select("#m2").select("input").node().focus();
-  }
-
-  for (var param in value) {
-    var control = d3.select("#" + param);
-    var v = value[param];
-    control.select("input").property("value", scale(value[param]));
-    control.select("span").text(formatkv(param, v));
-    shape.param(param, value[param]);
-  }
-  d3.select("#m1").select("input").attr("max", BOXDOX.length-1);
-  d3.select("#m2").select("input").attr("max", BOXDOX.length-1);
-  d3.select("#f").select("input").attr("max", Math.max(BOXDOX[value.m1].f.length,BOXDOX[value.m2].f.length)-1);
-  path.attr("d", shape);
-  footsies(value.m1,value.m2);
-}
-
-var buttons = d3.select("#buttons").selectAll("div.buttons").data([0,1]).enter()
-  .append("div").attr("class","buttons");
-
-  buttons.selectAll("button")
-    .data(function(d){
-      return d3.entries(BOXDOX.filter(function(p){
-        return p.p==d;
-      }))
-    })
-  .enter().append("button")
-    .text(function(d) { return d.value.c + " " + d.value.m; })
-    .on("click", mclick);    
-
-shape();
-
-var fsvg1 = d3.select("#svg")
-            .append("svg").attr("id","LOL1").attr("class","LOL")
-              .attr("width", 480)
-              .attr("height", 500);
-
-// var fsvg2 = d3.select("#svg")
-//             .append("svg").attr("id","LOL2").attr("class","LOL")
-//               .attr("width", 480)
-//               .attr("height", 500);
-
-// var fsvg3 = d3.select("#svg")
-//             .append("svg").attr("id","LOL3").attr("class","LOL")
-//               .attr("width", 480)
-//               .attr("height", 500);
-
-var FOOTSIES = [];
-var H = ["s0","s1","s2","x1","m1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","m2","x2"];
-d3.tsv("LOL.TSV",function(error,rows){
-  FOOTSIES = rows;
-  footsies(3,20);
-});
-
-function footsies(m1,m2) {
-  var LOL = FOOTSIES.filter(function(row){return row["s1"] == m1 && row["s2"] == m2;});
-  _footsies(m1,m2,LOL,"#LOL1");
-
-  // LOL = FOOTSIES.filter(function(row){return row["s1"] == m1});
-  // _footsies(m1,m2,LOL,"#LOL2");
-
-  // LOL = LOL.sort(function(a,b){return a.s2 == b.s2 ? a.s0 - b.s0 : a.s2 - b.s2;});
-  // _footsies(m1,m2,LOL,"#LOL3");
-}
-
-function _footsies(m1,m2,LOL,id) {
-
-  function fillclassh(i) {
-    if (i == 0 || i == 12)
-      return "fyellow";
-    if (i == 1 || (i >= 3 && i <= 11))
-      return "fblue";
-    if (i == 2 || (i >= 13 && i <= 21))
-      return "fred";
-  }
-  function fillclassr(i) {
-    if (i == 0 || i == 12)
-      return "fyellow";
-    if (i == 1 || (i >= 4 && i <= 11))
-      return "fblue";
-    if (i == 2 || (i >= 13 && i <= 20))
-      return "fred";
-  }
-  
-  var color1 = d3.scale.linear()
-    .domain([-2, -0.5])
-    .range(["#003", "#006"]);
-
-  var color2 = d3.scale.linear()
-    .domain([0.5, 2])
-    .range(["#600", "#300"]);
-
-  var width = 480 * 1;
-  var size = width / 22;
-
-  var fsvg = d3.select(id)
-    .attr("width", width)
-    .attr("height", size*(LOL.length+1));
-
-  fsvg.selectAll("*").remove();
-
-  var fsvgh = fsvg.append("g");  
-  var fsvgb = fsvg.append("g");
-
-  fsvgh.selectAll("rect").data(H).enter().append("rect")
-    .attr("width",size).attr("height",size).attr("class", function(d,i){return fillclassh(i);})
-    .attr("x", function(d,i) {return i*size;});
-
-  fsvgh.selectAll("text").data(H).enter().append("text")
-    .attr("x", function(d,i) {return i*size+size/2;})
-    .attr("y", size/2)
-    .text(function(d,i) {return d.toUpperCase();});
-
-
-  var fsvgr = fsvgb.selectAll("g").data(LOL).enter().append("g")
-                .attr("transform", function(d,i){ return "translate(0,"+((i+1)*size)+")";});
-
-  fsvgr.selectAll("rect").data(function(d,i){
-      return H.map(function(h,i){return d[h];});
-    }).enter().append("rect")
-    .attr("width",size).attr("height",size)
-    .attr("class",function(d,i){
-      return i < 5 || i > 19 ? fillclassr(i) : d == 3 ? "fyellow" : d == 1 ? "fblue" : d == 2 ? "fred" : "";})
-    .attr("fill",function(d,i){
-      return i == 3 ? color1(d) : i == 21 ? color2(d) : "";})
-    .attr("x", function(d,i) {return (i)*size;})
-    .datum(function(d,i){return i;})
-    .on("mouseenter",function(){
-      var di = d3.select(this).datum();
-      //console.log(di);
-      if (di >= 5 && di <= 19) {
-        var d = d3.select(this.parentNode).datum();
-        shape.param("adv", 12-di);
-        shape.param("m1", d["s1"]);
-        shape.param("m2", d["s2"]);
-        shape.param("x1", d["x1"]);
-        path.attr("d", shape);
-      }
-    }).on("click",function(){
-      var di = d3.select(this).datum();
-      //console.log(di);
-      if (di >= 5 && di <= 19) {
-        var d = d3.select(this.parentNode).datum();
-        shape.param("adv", 12-di);
-        shape.param("m1", d["s1"]);
-        shape.param("m2", d["s2"]);
-        shape.param("x1", d["x1"]);
-        path.attr("d", shape);
-        d3.select("#f").select("input").node().focus();
-      }
-    });
-
-
-  fsvgr.selectAll("text").data(function(d,i){
-      return H.map(function(h,i){return d[h];});
-    }).enter().append("text")
-    .attr("x", function(d,i) {return i*size+size/2;})
-    .attr("y", size/2)
-    .text(function(d,i) {return true || i < 5 || i > 19 ? d : "";});
-
-}
+d3.select("#f").select("input").attr("min", -1).attr("max", 50).attr("step", 1);
 
 </script>
 <script>
