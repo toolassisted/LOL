@@ -313,7 +313,11 @@
         });
       }
 
-      d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
+      //d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
+
+      if (d3.select("#P"+p).select(".MOVEALL").classed("SEL")) {
+        allhit(p);
+      }
 
     });
 
