@@ -118,7 +118,9 @@
     width: 45%;
     display: inline-block;
   }
-
+  div.ROW {    
+    white-space: nowrap;
+  }
   .MOVES div:nth-of-type(2), .MOVES div:nth-of-type(4) {
     padding-top: 10px;
   }
@@ -126,8 +128,8 @@
 
   button.CHAR {
     padding: 5px;
-    margin: 5px;
-    width: 10%;
+    margin: 3px;
+    width: 8%;
     background-color: #999;
   }
   button.MOVE {
@@ -165,10 +167,11 @@
 
   var BOXDOX = [[],[],[]];
   var CHARS = [
-  "BLR", "BLR2", "BRD", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN", "LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF",
+  ["BLR", "BLR2", "BRD", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN"],
+  ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF"],
   ];
   var MOVES = [
-  ["4T", "5T"],
+  ["4T", "5T", "ALL", "ADV0", "ADV+", "ADV-", "ADV=", "F-", "F+"],
   ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
   ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
   ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
@@ -177,9 +180,10 @@
   ];
 
   var CDIV = d3.selectAll(".CHARS").datum(function(d,i){return i+1;});
-  CDIV.selectAll("button").data(CHARS).enter().append("button").attr("class","CHAR")
+  CDIV.selectAll("div").data(CHARS).enter().append("div").attr("class","ROW")
+      .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class","CHAR")
       .on("click",function(d,i){
-        var p = d3.select(this.parentNode).datum();
+        var p = d3.select(this.parentNode.parentNode).datum();
         d3.select("#P"+p).selectAll(".CHAR").classed("SEL",false);
         d3.select(this).classed("SEL",true);
         cload(d,p);
@@ -187,27 +191,84 @@
       .text(function(d,i){return d;});
 
   var MDIV = d3.selectAll(".MOVES").datum(function(d,i){return i+1;});
-  MDIV.selectAll("div").data(MOVES).enter().append("div").attr("class","DIR")
+  MDIV.selectAll("div").data(MOVES).enter().append("div").attr("class","ROW")
       .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP"})
       .on("click", function(d,i) { 
         var p = d3.select(this.parentNode.parentNode).datum();
 
-        d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
-        d3.select(this).classed("SEL",true);
         // console.log(p,d,i);
         var m = BOXDOX[p].filter(function(e,i){ return e.p == p-1 && e.m == d;});
+        
+        if (m.length == 0) { 
+          // console.log(m);
+          if (d == "ADV0") {
+            prop("adv", 0);
+            d3.select("#adv").select("input").node().focus();
+            render(rparams());
+          } else if (d == "ADV-") {            
+            var pv = 1*prop("adv"); prop("adv", pv-1);
+            d3.select("#f").select("input").node().focus();
+            render(rparams());
+          } else if (d == "ADV+") {
+            var pv = 1*prop("adv"); prop("adv", pv+1);
+            d3.select("#f").select("input").node().focus();
+            render(rparams());
+          } else if (d == "F-") {            
+            var pv = 1*prop("f"); prop("f", pv-1);
+            d3.select("#f").select("input").node().focus();
+            render(rparams());
+          } else if (d == "F+") {
+            var pv = 1*prop("f"); prop("f", pv+1);
+            d3.select("#f").select("input").node().focus();
+            render(rparams());
+          } else if (d == "ADV=") {
+
+            var s1 = BOXDOX[1][1*prop("m1")].f[2].s0;
+            if (s1 == 0) {
+              var sf = m[prop("m1")].f.filter(function(e,i){ return e.c5.filter(function(c){ return c.t!=4; }).length > 0; });
+              if (sf.length>0) s1 = sf[0].sf;
+            }
+            var s2 = BOXDOX[2][1*prop("m2")].f[2].s0;
+            if (s2 == 0) {
+              var sf = m[prop("m2")].f.filter(function(e,i){ return e.c5.filter(function(c){ return c.t!=4; }).length > 0; });
+              if (sf.length>0) s2 = sf[0].sf;
+            }
+            //console.log(s1,s2);
+            var adv = 1*prop("adv");
+            var s0 = s1-s2;
+            prop("adv", s0);
+            if (s0<0) prop("f", s2+2);
+            else if (s0>0) prop("f", s1+2);
+            d3.select("#adv").select("input").node().focus();
+            render(rparams());
+          }
+          return;
+        }
+
+        d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
+        d3.select(this).classed("SEL",true);
+
         var s0 = m[0].f[2].s0;
         if (s0 == 0) {
-          s0f = m[0].f.filter(function(e,i){ return e.c5.filter(function(c){ return c.t!=4; }).length > 0; });
+          var s0f = m[0].f.filter(function(e,i){ return e.c5.filter(function(c){ return c.t!=4; }).length > 0; });
           if (s0f.length>0) s0 = s0f[0].sf;
         }
-        d3.select("#m"+p).select("input").property("value", m[0].i);
-        d3.select("#f").select("input").property("value", s0+2);
+        prop("m"+p, m[0].i);
+
+        var adv = 1*prop("adv");
+        if (p==1) prop("f", s0+2+(adv<0 && s0+2>adv?-adv:0));
+        else if (p==2) prop("f", s0+2+(adv<0?0:adv));
         d3.select("#f").select("input").node().focus();
         render(rparams());
 
       } )
       .text(function(d,i){return d;})
+
+  function prop(p,v) {
+    if (arguments.length == 1) return d3.select("#"+p).select("input").property("value");
+    d3.select("#"+p).select("input").property("value", v);
+    d3.select("#"+p).select("span").text(formatkv(p,v));
+  }
 
   function cload(c,p) {
 
@@ -270,13 +331,8 @@
         fg.append(function(){return fpath.node();});
     }
 
-    stage({
-      m1: d3.select("#m1").select("input").property("value"), 
-      m2: d3.select("#m2").select("input").property("value"), 
-      adv: d3.select("#adv").select("input").property("value"), 
-      x1: d3.select("#x1").select("input").property("value"), 
-      f: f, 
-    });
+    prop("f",f);
+    stage(rparams());
   };
 
   function stage(params) {
@@ -530,7 +586,7 @@ d3.select("#m1").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
 d3.select("#m2").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
 d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 0.05);
 d3.select("#adv").select("input").attr("min", -20).attr("max", 20).attr("step", 1).style("transform","rotateY(180deg)");
-d3.select("#f").select("input").attr("min", -1).attr("max", 50).attr("step", 1);
+d3.select("#f").select("input").attr("min", -1).attr("max", 100).attr("step", 1);
 
 </script>
 <script>
