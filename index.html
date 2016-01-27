@@ -228,10 +228,12 @@
             render(rparams());
           } else if (d == "F-") {            
             var pv = 1*prop("f"); prop("f", pv-1);
+            pv = 1*prop("adv"); if (p==2) prop("adv", pv+1); else prop("adv", pv-1);
             d3.select("#f").select("input").node().focus();
             render(rparams());
           } else if (d == "F+") {
             var pv = 1*prop("f"); prop("f", pv+1);
+            pv = 1*prop("adv"); if (p==1) prop("adv", pv+1); else prop("adv", pv-1);
             d3.select("#f").select("input").node().focus();
             render(rparams());
           } else if (d == "ADV=") {
