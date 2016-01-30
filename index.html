@@ -175,6 +175,9 @@
   button.SEL {
     background-color: #ffc;
   }
+  button.UC {
+    background-color: #cc9;
+  }
 
   .MOVES {
     padding-top: 10px;
@@ -199,7 +202,7 @@
   ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF"],
   ];
   var MOVES = [
-  ["4T", "5T", "ALL"], //, "ADV0", "ADV+", "ADV-", "ADV="],
+  ["4T", "5T", "ALL", "P1", "P2"], //, "ADV0", "ADV+", "ADV-", "ADV="],
   ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
   ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
   ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
@@ -281,7 +284,7 @@
 
   var MDIV = d3.selectAll(".MOVES").datum(function(d,i){return i+1;});
   MDIV.selectAll("div").data(MOVES).enter().append("div").attr("class","ROW")
-      .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP"})      
+      .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP";})
       .text(function(d,i){return d;})
       .on("click", function(d,i) { 
         var p = d3.select(this.parentNode.parentNode).datum();
@@ -293,16 +296,24 @@
           // console.log(m);
           if (d == "ALL") {
             //d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
-            d3.select(this).classed("SEL",true);
+            d3.select(this).classed("UC",true);
             allhit(p);
-          }
+          } else if (d == "P1") {
+            d3.select(this).classed("UC",!d3.select(this).classed("UC"));
+            d3.select("#P"+p).select(".MOVEP2").classed("UC",!d3.select(this).classed("UC"));
+            stage(rparams());
+          } else if (d == "P2") {
+            d3.select(this).classed("UC",!d3.select(this).classed("UC"));
+            d3.select("#P"+p).select(".MOVEP1").classed("UC",!d3.select(this).classed("UC"));
+            stage(rparams());
+          }          
           return;
         }
 
-        var allsel = d3.select("#P"+p).select(".MOVEALL").classed("SEL");
+        // var allsel = d3.select("#P"+p).select(".MOVEALL").classed("SEL");
         d3.select("#P"+p).selectAll("button.MOVE").classed("SEL",false);
         d3.select(this).classed("SEL",true);
-        if (allsel) d3.select("#P"+p).select(".MOVEALL").classed("SEL",true);
+        // if (allsel) d3.select("#P"+p).select(".MOVEALL").classed("SEL",true);
 
         var s0 = mhit1(m[0]);
         prop("m"+p, m[0].i);
@@ -393,7 +404,7 @@
     var rem = rg.select("#ALL"+p).remove();
     //console.log(rem.empty());
     if (!rem.empty()) {
-      d3.select("#P"+p).select(".MOVEALL").classed("SEL",false);
+      d3.select("#P"+p).select(".MOVEALL").classed("UC",false);
       return;
     }
     var ag = rg.append("g").attr("id","ALL"+p);
@@ -477,8 +488,15 @@
       var rects = [];
       dg.selectAll("*").remove();
 
-      var b1 = BOXDOX[1][params.m1];
-      var b2 = BOXDOX[2][params.m2];
+      var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
+      var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
+
+      var x1 = p12 ? -params.x1-2 : +params.x1+2;
+      var x2 = p21 ? +params.x1+2 : -params.x1-2;
+
+      var b1 = BOXDOX[1][+params.m1 + (+params.m1<38?1:-1) * (p12 ? 38 :0)];
+      var b2 = BOXDOX[2][+params.m2 + (+params.m2<38?1:-1) * (p21 ? 38 :0)];
+      
       var f = Math.floor(params.f);
       var adv = Math.floor(params.adv);
       var f1 = f;
@@ -521,7 +539,7 @@
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
         .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+        .attr("x", function(d) { return (x1)+d.rx; })
         .attr("y", function(d) { return -d.ry-d.rh; })
         .attr("height", function(d) { return d.rh; })
         .attr("width", function(d) { return d.rw; });
@@ -537,15 +555,15 @@
       }
       dg.selectAll("rect").data(rects).enter().append("rect")
         .attr("class", function(d) {return d.c;})
-        .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+        .attr("x", function(d) { return (x2)+d.rx; })
         .attr("y", function(d) { return -d.ry-d.rh; })
         .attr("height", function(d) { return d.rh; })
         .attr("width", function(d) { return d.rw; });
 
-      if (d3.select("#P"+1).select(".MOVEALL").classed("SEL")) {
+      if (d3.select("#P"+1).select(".MOVEALL").classed("UC")) {
         allhit(1);
       }
-      if (d3.select("#P"+2).select(".MOVEALL").classed("SEL")) {
+      if (d3.select("#P"+2).select(".MOVEALL").classed("UC")) {
         allhit(2);
       }
 
