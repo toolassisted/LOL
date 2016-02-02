@@ -17,6 +17,14 @@
     vector-effect: non-scaling-stroke;
   }
 
+  td {
+    padding: 5px;    
+    font: 14px sans-serif;
+    text-align: left;
+    vertical-align: top;
+  }
+
+
   #BOXDOX rect {
     stroke-width: 1px;
     /*stroke: #333;*/
@@ -61,6 +69,8 @@
   .p2cyan { stroke: #6ff; }
 
   .allred { stroke: #f00; }
+  .ucred { stroke: #c00; }
+  .ucblue { stroke: #00c; }
 
   #buttons {
     width: 70%;
@@ -125,14 +135,25 @@
 </style>
 <style type="text/css">
 
-  div#PLAYERS {
+  div#PLAYERS, div#UCHITBOX {
     width: 100%;
     text-align: center;
   }
   div.PLAYER {
-    width: 45%;
+    max-width: 45%;
     display: inline-block;
   }
+  div.UCHITBOX {
+    max-width: 45%;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  div#PLAYERS, div#UCHITBOX {
+    width: 100%;
+    text-align: center;
+  }
+
   div.ROW {    
     white-space: nowrap;
   }
@@ -175,6 +196,27 @@
   button.SEL {
     background-color: #ffc;
   }
+
+  button.FRAME {
+    padding: 7px;
+    margin: 3px;
+    width: 50px;
+    background-color: #999;
+  }
+
+  button.FRAMET {
+    background-color: #999;
+  }  
+  button.FRAMEL {
+    background-color: #eee;
+  }
+  button.FRAMEM {
+    background-color: #ccc;
+  }
+  button.FRAMEH {
+    background-color: #aaa;
+  }
+
   button.UC {
     background-color: #cc9;
   }
@@ -192,7 +234,10 @@
 <div id="controls"></div>
 </div>
 <div id="svg"></div>
-
+<div id="UCHITBOX">
+<div id="UC1" class="UCHITBOX"></div>
+<div id="UC2" class="UCHITBOX"></div>
+</div>
 <script src="d3.min.js"></script>
 <script>
 
@@ -380,6 +425,7 @@
       // if (d3.select("#P"+p).select(".MOVEALL").classed("SEL")) {
       //   allhit(p);
       // }
+      UCHITBOX(p);
 
     });
 
@@ -394,6 +440,142 @@
         x1: d3.select("#x1").select("input").property("value"), 
         f: d3.select("#f").select("input").property("value"), 
         };
+  }
+
+  function UCHITBOX(p) {
+    var i = -1;
+    var th = ["U C", "FRAME"];
+
+    var UC = d3.select("#UC"+p);
+    UC.selectAll("*").remove();
+    var UCT = UC.append("table").style("width","100%");
+    UCT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
+
+    var dup = [];
+    var mb = {};
+    var mblen = 0;
+    var um = [];
+    BOXDOX[p].forEach(function(m,mi){
+      if (m.p+1!=p) 
+        return;
+
+      if (dup.indexOf(m.f[2].s) >= 0) ;
+      else dup.push(m.f[2].s);
+
+      if (mb[m.f[2].s] && mb[m.f[2].s].indexOf(m.m) < 0) { mb[m.f[2].s].push(m.i); mblen++; }
+      else { mb[m.f[2].s] = [m.i]; mblen++; um.push(m.i); }
+    });
+
+    for (i=0;i<um.length;i++) {
+      var m = BOXDOX[p][um[i]];
+      var tr = UCT.append("tr").style("background-color",i%2==0?"#222":"#111");      
+      var mtd = tr.append("td").append("button").classed("FRAME",true).classed("FRAME"+m.m.charAt(1), true)
+        .text(m.m)
+        .on("click",function(d,di){
+          d3.select(this).classed("UC",!d3.select(this).classed("UC"));
+          stage(rparams());
+        });
+      var mf =[];
+
+      var td = tr.append("td").style("text-align","left");
+
+      for (var f=0;f<m.f.length;f++) {
+        
+        var frame = m.f[f];
+        if (m.f[f].c5.length>0)  {
+          var hb = false;
+          for (var c=0;c<frame.c5.length;c++) {
+            if (frame.c5[c].t!=4 && frame.c5[c].t!=3) {
+              hb = true;
+            }
+          }
+          if (hb) {
+              var sf = (frame.i+1-2);
+              var rf = (frame.s1-frame.sf);
+              td.append("button").classed("FRAME",true).classed("FRAME"+m.m.charAt(1), true)
+                .text(sf)
+                .datum({m:um[i],f:[f]})
+                .on("click",function(d,di){
+                  d3.select(this).classed("UC",!d3.select(this).classed("UC"));
+                  stage(rparams());
+                });
+              mf.push(f);
+              mtd.datum({m:um[i],f:mf});
+          }
+        }
+      }
+
+    }
+
+  }
+
+
+  function uchit(p) {
+    var i = -1, params = rparams();
+
+    var dg = rg;
+    var rects = [];
+    var rem = rg.select("#UCG"+p).remove();
+    var ag = rg.append("g").attr("id","UCG"+p);
+
+    var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
+    var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
+
+    var x1 = p12 ? -params.x1-2 : +params.x1+2;
+    var x2 = p21 ? +params.x1+2 : -params.x1-2;
+
+    var UCB = d3.select("#UC"+p).selectAll(".UC");
+
+    UCB.each(function(d,di){
+
+      var b1 = BOXDOX[1][d.m + (d.m<38?1:-1) * (p12 ? 38 :0)];
+      var b2 = BOXDOX[2][d.m + (d.m<38?1:-1) * (p21 ? 38 :0)];
+
+      var m = p == 1 ? b1 : b2;//BOXDOX[p][um[i]];
+      var dg = ag.append("g");
+
+      rects = [];
+
+      for (i=0;i<d.f.length;i++) {
+        var f=d.f[i];        
+        var frame = m.f[f];
+
+        if (m.f[f].c6.length>0)  {
+          for (var c=0;c<frame.c6.length;c++) {
+            if (frame.c6[c].t!=4) {
+              frame.c6[c].c="ucblue";
+              rects.push(frame.c6[c]);
+            }
+          }
+        }        
+        if (m.f[f].c5.length>0)  {
+          for (var c=0;c<frame.c5.length;c++) {
+            if (frame.c5[c].t!=4 && frame.c5[c].t!=3) {
+              frame.c5[c].c="ucred";
+              rects.push(frame.c5[c]);
+            }
+          }
+        }
+      }
+
+      if (p == 1) {
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (x1)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      } else if (p == 2) {
+        dg.selectAll("rect").data(rects).enter().append("rect")
+          .attr("class", function(d) {return d.c;})
+          .attr("x", function(d) { return (x2)+d.rx; })
+          .attr("y", function(d) { return -d.ry-d.rh; })
+          .attr("height", function(d) { return d.rh; })
+          .attr("width", function(d) { return d.rw; });
+      }
+
+    });
+
   }
 
   function allhit(p) {
@@ -425,9 +607,19 @@
       else { mb[m.f[2].s] = [m.i]; mblen++; um.push(m.i); }
     });
 
+    var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
+    var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
+
+    var x1 = p12 ? -params.x1-2 : +params.x1+2;
+    var x2 = p21 ? +params.x1+2 : -params.x1-2;
+
     for (i=0;i<um.length;i++) {
 
-      var m = BOXDOX[p][um[i]];
+
+      var b1 = BOXDOX[1][um[i] + (um[i]<38?1:-1) * (p12 ? 38 :0)];
+      var b2 = BOXDOX[2][um[i] + (um[i]<38?1:-1) * (p21 ? 38 :0)];
+
+      var m = p == 1 ? b1 : b2;//BOXDOX[p][um[i]];
       var dg = ag.append("g");
 
       rects = [];
@@ -447,14 +639,14 @@
       if (p == 1) {
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+          .attr("x", function(d) { return (x1)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
       } else if (p == 2) {
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+          .attr("x", function(d) { return (x2)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
@@ -566,6 +758,8 @@
       if (d3.select("#P"+2).select(".MOVEALL").classed("UC")) {
         allhit(2);
       }
+      uchit(1);
+      uchit(2);
 
     } 
     return d3.svg.line()(points.map(function(p){return [p[0],p[1]];})) + "Z";
@@ -690,6 +884,7 @@ var svg = d3.select("#svg")
     .attr("width", 960)
     .attr("height", 500);
 
+
 var defaults = {m1:1,m2:39,adv:0,x1:-1.5,f:-2};
 
 var path = svg.append("path")
@@ -746,6 +941,8 @@ d3.select("#m2").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
 d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 0.05);
 d3.select("#adv").select("input").attr("min", -100).attr("max", 100).attr("step", 1).style("transform","rotateY(180deg)");
 d3.select("#f").select("input").attr("min", -1).attr("max", 100).attr("step", 1);
+
+cload("KRN",1);
 
 </script>
 <script>
