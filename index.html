@@ -24,6 +24,18 @@
     vertical-align: top;
   }
 
+  #FOOTSIES td {
+    padding: 5px;    
+    font: 10px sans-serif;
+    text-align: center;
+    vertical-align: top;
+    color: #ccc;
+  }
+
+  /*.R0 { background-color: #111;}*/
+  .R1 { background-color: #003; }
+  .R2 { background-color: #300; }
+  .R3 { background-color: #330; }
 
   #BOXDOX rect {
     stroke-width: 1px;
@@ -135,9 +147,13 @@
 </style>
 <style type="text/css">
 
-  div#PLAYERS, div#UCHITBOX {
+  div#PLAYERS, div#UCHITBOX, div#FOOTSIES {
     width: 100%;
     text-align: center;
+  }
+  div#FOOTSIE {
+    width: 960px;
+    margin: 0 auto;
   }
   div.PLAYER {
     max-width: 45%;
@@ -234,6 +250,10 @@
 <div id="controls"></div>
 </div>
 <div id="svg"></div>
+<div id="FOOTSIES">
+<div id="FOOTSIE">
+</div>
+</div>
 <div id="UCHITBOX">
 <div id="UC1" class="UCHITBOX"></div>
 <div id="UC2" class="UCHITBOX"></div>
@@ -247,7 +267,7 @@
   ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF"],
   ];
   var MOVES = [
-  ["4T", "5T", "ALL", "P1", "P2"], //, "ADV0", "ADV+", "ADV-", "ADV="],
+  ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES"], //, "ADV0", "ADV+", "ADV-", "ADV="],
   ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
   ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
   ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
@@ -256,9 +276,6 @@
   var DIALS = [
   ["ADV=", "ADV0", "ADV+", "ADV-", "X1 -2.0", "X1 -1.5", "X1 -1.0", "X1 -0.5", "FRAME1-", "FRAME1+", "FRAME2-", "FRAME2+", "FRAME-","FRAME+"]
   ];
-
-
-
 
   var DDIV = d3.selectAll(".DIALS").datum(function(d,i){return i+1;});
   DDIV.selectAll("div").data(DIALS).enter().append("div").attr("class","ROW")
@@ -315,7 +332,6 @@
 
       } );
 
-
   var CDIV = d3.selectAll(".CHARS").datum(function(d,i){return i+1;});
   CDIV.selectAll("div").data(CHARS).enter().append("div").attr("class","ROW")
       .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class","CHAR")
@@ -329,7 +345,11 @@
 
   var MDIV = d3.selectAll(".MOVES").datum(function(d,i){return i+1;});
   MDIV.selectAll("div").data(MOVES).enter().append("div").attr("class","ROW")
-      .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class", function(d,i){return "MOVE MOVE" + d + " DUP";})
+      .selectAll("button").data(function(d){return d;}).enter().append("button")
+      .attr("class", function(d,i){        
+        var p = d3.select(this.parentNode.parentNode).datum();
+        return "MOVE MOVE" + d + " DUP" + (d=="FOOTSIES" || d=="P"+p ? " UC" : "");
+      })
       .text(function(d,i){return d;})
       .on("click", function(d,i) { 
         var p = d3.select(this.parentNode.parentNode).datum();
@@ -351,7 +371,11 @@
             d3.select(this).classed("UC",!d3.select(this).classed("UC"));
             d3.select("#P"+p).select(".MOVEP1").classed("UC",!d3.select(this).classed("UC"));
             stage(rparams());
-          }          
+          } else if (d == "FOOTSIES") {
+            var c = !d3.select(this).classed("UC");
+            d3.selectAll(".MOVEFOOTSIES").classed("UC",c)
+            d3.select("#FOOTSIES").style("display", c ? "" : "none");
+          }
           return;
         }
 
@@ -369,7 +393,9 @@
         d3.select("#f").select("input").node().focus();
         render(rparams());
 
-      } );
+        UCFOOTSIES(prop("m1"),prop("m2"));
+
+      });
 
   function mhit1(m) {
     var s0 = m.f[2].s0;
@@ -427,6 +453,8 @@
       // }
       UCHITBOX(p);
 
+      // if (c=="KRN") cload("KEN",2);
+      // if (c=="KEN") UCFOOTSIES(2,44);
     });
 
   }
@@ -442,15 +470,7 @@
         };
   }
 
-  function UCHITBOX(p) {
-    var i = -1;
-    var th = ["U C", "FRAME"];
-
-    var UC = d3.select("#UC"+p);
-    UC.selectAll("*").remove();
-    var UCT = UC.append("table").style("width","100%");
-    UCT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
-
+  function UM(p) {
     var dup = [];
     var mb = {};
     var mblen = 0;
@@ -465,6 +485,153 @@
       if (mb[m.f[2].s] && mb[m.f[2].s].indexOf(m.m) < 0) { mb[m.f[2].s].push(m.i); mblen++; }
       else { mb[m.f[2].s] = [m.i]; mblen++; um.push(m.i); }
     });
+    return um;
+  }
+
+  function FOOTSIE(f1,f2,x1,x2) {
+    for (var c1=0;c1<f1.c5.length;c1++) {
+      var b1 = f1.c5[c1];
+      if (b1.t!=4 && b1.t!=3) {      
+        var r1 = {left:b1.rx+x1,top:b1.ry,right:b1.rx+x1+b1.rw,bottom:b1.ry+b1.rh};
+        for (var c2=0;c2<f2.c6.length;c2++) {
+          var b2 = f2.c6[c2];
+          if ((b1.t == 2 && b2.t == 4) || (b1.t == 0 && b2.t != 4)) {          
+            var r2 = {left:b2.rx+x2,top:b2.ry,right:b2.rx+x2+b2.rw,bottom:b2.ry+b2.rh};
+            var hit = !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
+            if (hit) return 1; //b1.t == 2 ? 1000 : b1.s;
+          }
+        }
+      }
+    }
+    return 0;
+  }
+
+  function FOOTSIES(m1,m2,x,adv) {
+
+    var priority = {T:1000,H:50,M:40,L:30};
+    var r = 0;
+
+    var x1 = +x+2;
+    var x2 = -x-2;
+
+    var b1 = m1;
+    var b2 = m2;
+          
+    var adv = Math.floor(adv);
+
+    var fmax = Math.max(b1.f.length,b2.f.length);
+    for(var f=0;f<fmax;f++) {
+      var f1 = f;
+      var f2 = f;
+      if (adv > 0) f2 -= adv;
+      if (adv < 0) f1 += adv;
+      if (f1 < 0) f1 = 0;
+      if (f2 < 0) f2 = 0;
+      if (f1 > b1.f.length-1) f1 = b1.f.length-1;
+      if (f2 > b2.f.length-1) f2 = b2.f.length-1;
+
+      var r1 = FOOTSIE(b1.f[f1],b2.f[f2],x1,x2);
+      var r2 = FOOTSIE(b2.f[f2],b1.f[f1],x2,x1);
+
+      if (r1 > 0 || r2 > 0) {
+
+        var p1 = r1 == 0 ? 0 : priority[b1.m.charAt(1)];
+        var p2 = r2 == 0 ? 0 : priority[b2.m.charAt(1)];
+
+        if (p1 > p2) r = 1;
+        else if (p1 < p2) r = 2;
+        else if (p1 == p2) r = 3;
+      }
+
+      if (r>0) { return {r:r,f:f}; }
+    }
+
+    return {r:0,f:0};
+  }
+
+  function UCFOOTSIES(m1,m2) {
+
+    console.log("FOOTSIES");
+
+    var um1 = UM(1);
+    var um2 = UM(2);
+
+    var xScale1 = d3.scale.linear().range(['#003', '#006']).domain([0.5, 2.0]);
+    var xScale2 = d3.scale.linear().range(['#300', '#600']).domain([0.5, 2.0]);
+    var mScale1 = d3.scale.linear().range(['#003', '#006']).domain([0, um1.length]);
+    var mScale2 = d3.scale.linear().range(['#300', '#600']).domain([0, um2.length]);
+
+    var i1 = 1;
+    var i2 = 1;
+    var i = 1;
+    var th = [//"S0","S1","S2",
+    "M1","X1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","X2","M2"];
+
+    var F = d3.select("#FOOTSIE");
+    F.selectAll("*").remove();
+    var FT = F.append("table").style("width","100%").style("table-layout","fixed");
+    FT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
+
+    i1 = 2;
+    // for (i1=0;i1<um1.length/4;i1++) 
+    {
+      i2 = 6;
+      //for (i2=0;i2<um1.length;i2++) 
+      {
+        // var b1 = BOXDOX[1][um1[i1]];
+        // var b2 = BOXDOX[2][um2[i2]];
+
+        var b1 = BOXDOX[1][m1];
+        var b2 = BOXDOX[2][m2];
+
+        for (x=0.5;x<2.0;x+=0.05) {
+
+          var tr = FT.append("tr").style("background-color",i%2==0?"#222":"#111");   
+          // tr.append("td").text(i++);
+          // tr.append("td").text(um1[i1]).style("background-color",mScale1(i1));
+          // tr.append("td").text(um2[i2]).style("background-color",mScale2(i2));
+          tr.append("td").text(b1.m).style("background-color",mScale1(i1));
+          tr.append("td").text(-x.toFixed(2)).style("background-color",xScale1(x));
+
+          for (adv=7;adv>=-7;adv-=1) {
+            var r = FOOTSIES(b1,b2,-x,adv);
+            tr.append("td").text(r.r).classed("R"+r.r,true)
+              .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+              .on("mouseenter",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              })
+              .on("click",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              });
+          }
+
+          tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));
+          tr.append("td").text(b2.m).style("background-color",mScale2(i2));
+        }
+      }
+    }
+  }
+
+  function UCHITBOX(p) {
+    var i = -1;
+    var th = ["U C", "FRAME"];
+
+    var UC = d3.select("#UC"+p);
+    UC.selectAll("*").remove();
+    var UCT = UC.append("table").style("width","100%");
+    UCT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
+
+    var um = UM(p);
 
     for (i=0;i<um.length;i++) {
       var m = BOXDOX[p][um[i]];
@@ -508,7 +675,6 @@
     }
 
   }
-
 
   function uchit(p) {
     var i = -1, params = rparams();
@@ -591,21 +757,7 @@
     }
     var ag = rg.append("g").attr("id","ALL"+p);
 
-
-    var dup = [];
-    var mb = {};
-    var mblen = 0;
-    var um = [];
-    BOXDOX[p].forEach(function(m,mi){
-      if (m.p+1!=p) 
-        return;
-
-      if (dup.indexOf(m.f[2].s) >= 0) ;
-      else dup.push(m.f[2].s);
-
-      if (mb[m.f[2].s] && mb[m.f[2].s].indexOf(m.m) < 0) { mb[m.f[2].s].push(m.i); mblen++; }
-      else { mb[m.f[2].s] = [m.i]; mblen++; um.push(m.i); }
-    });
+    var um = UM(p);
 
     var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
     var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
@@ -930,6 +1082,9 @@ control.append("input")
       else
         render(rparams());
 
+      if (d.key == "m1" || d.key == "m2")
+        UCFOOTSIES(prop("m1"),prop("m2"));
+
       d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
 
@@ -942,7 +1097,8 @@ d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 
 d3.select("#adv").select("input").attr("min", -100).attr("max", 100).attr("step", 1).style("transform","rotateY(180deg)");
 d3.select("#f").select("input").attr("min", -1).attr("max", 100).attr("step", 1);
 
-//cload("KRN",1);
+// cload("KRN",1);
+
 
 </script>
 <script>
