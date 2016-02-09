@@ -37,6 +37,8 @@
   #FOOTSIES td.R1 { /*color: #999;*/ /*color: #00c;*/ background-color: #003; }
   #FOOTSIES td.R2 { /*color: #999;*/ /*color: #c00;*/ background-color: #300; }
   #FOOTSIES td.R3 { /*color: #999;*/ /*color: #cc0;*/ background-color: #330; }
+  #FOOTSIES td.R10 { /*color: #999;*/ color: #009; background-color: #001; }
+  #FOOTSIES td.R20 { /*color: #999;*/ color: #900; background-color: #100; }
   #FOOTSIES td.R11 { /*color: #999;*/ color: #009; /*background-color: #001;*/ }
   #FOOTSIES td.R22 { /*color: #999;*/ color: #900; /*background-color: #100;*/ }
 
@@ -552,8 +554,8 @@
       }
 
       if (r>0) { 
-        if (r == 1 && (b2.f[f2].si < 100 || b2.f[f2].sf > b2.f[f2].s1)) return {r:11,f:f};
-        if (r == 2 && (b1.f[f1].si < 100 || b1.f[f1].sf > b1.f[f1].s1)) return {r:22,f:f};
+        if (r == 1 && (b2.f[f2].si < 100 || b2.f[f2].sf > b2.f[f2].s1)) return {r:f2>1?11:10,f:f};
+        if (r == 2 && (b1.f[f1].si < 100 || b1.f[f1].sf > b1.f[f1].s1)) return {r:f1>1?22:20,f:f};
         return {r:r,f:f};
       }
     }
@@ -826,7 +828,7 @@
             tr.append("td")
               //.text(r.r)
               .classed("R"+r.r,true)
-              .text(d1.toFixed(1)).style("background-color", r.r==1?dScale1(d1):r.r==2?dScale2(d2):"")              
+              .text(d1.toFixed(1)).style("background-color", r.r==1||r.r==10?dScale1(d1):r.r==2||r.r==20?dScale2(d2):"")              
               .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
               .on("mouseenter",function(d,i){
                 prop("x1",d.x1);
