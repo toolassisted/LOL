@@ -33,9 +33,12 @@
   }
 
   /*.R0 { background-color: #111;}*/
-  .R1 { background-color: #003; }
-  .R2 { background-color: #300; }
-  .R3 { background-color: #330; }
+  #FOOTSIES td.R0 { color: #333; }
+  #FOOTSIES td.R1 { /*color: #999;*/ /*color: #00c;*/ background-color: #003; }
+  #FOOTSIES td.R2 { /*color: #999;*/ /*color: #c00;*/ background-color: #300; }
+  #FOOTSIES td.R3 { /*color: #999;*/ /*color: #cc0;*/ background-color: #330; }
+  #FOOTSIES td.R11 { /*color: #999;*/ color: #009; /*background-color: #001;*/ }
+  #FOOTSIES td.R22 { /*color: #999;*/ color: #900; /*background-color: #100;*/ }
 
   #BOXDOX rect {
     stroke-width: 1px;
@@ -261,6 +264,7 @@
 <script src="d3.min.js"></script>
 <script>
 
+  var UCME = !true;
   var BOXDOX = [[],[],[]];
   var CHARS = [
   ["BLR", "BLR2", "BRD", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN"],
@@ -393,7 +397,10 @@
         d3.select("#f").select("input").node().focus();
         render(rparams());
 
-        UCFOOTSIES(prop("m1"),prop("m2"));
+        if (!UCME) UCFOOTSIES(prop("m1"),prop("m2"));
+        else if (UCME) UCFOOTSIES(prop("m1"),prop("m2"));
+        else if (UCME && p == 1) UCFOOTSIES(prop("m1"),-3);
+        else if (UCME && p == 2) UCFOOTSIES(-3,prop("m2"));
 
       });
 
@@ -453,8 +460,9 @@
       // }
       UCHITBOX(p);
 
-      // if (c=="KRN") cload("KEN",2);
-      // if (c=="KEN") UCFOOTSIES(2,44);
+      if (UCME && c=="KRN") cload("KEN",2);
+      else if (UCME && c=="KEN") UCFOOTSIES(18,47);
+      else if (UCME && c=="KEN") UCFOOTSIES(-3,44);
     });
 
   }
@@ -543,7 +551,11 @@
         else if (p1 == p2) r = 3;
       }
 
-      if (r>0) { return {r:r,f:f}; }
+      if (r>0) { 
+        if (r == 1 && (b2.f[f2].si < 100 || b2.f[f2].sf > b2.f[f2].s1)) return {r:11,f:f};
+        if (r == 2 && (b1.f[f1].si < 100 || b1.f[f1].sf > b1.f[f1].s1)) return {r:22,f:f};
+        return {r:r,f:f};
+      }
     }
 
     return {r:0,f:0};
@@ -556,6 +568,8 @@
     var um1 = UM(1);
     var um2 = UM(2);
 
+    var dScale1 = d3.scale.linear().range(['#003', '#006']).domain([1.0, 4.0]);
+    var dScale2 = d3.scale.linear().range(['#300', '#600']).domain([1.0, 4.0]);
     var xScale1 = d3.scale.linear().range(['#003', '#006']).domain([0.5, 2.0]);
     var xScale2 = d3.scale.linear().range(['#300', '#600']).domain([0.5, 2.0]);
     var mScale1 = d3.scale.linear().range(['#003', '#006']).domain([0, um1.length]);
@@ -567,35 +581,47 @@
     var th = [//"S0","S1","S2",
     "M1","X1","+7","+6","+5","+4","+3","+2","+1","0","1+","2+","3+","4+","5+","6+","7+","X2","M2"];
 
+    if (m1 < 0) {
+      th = ["ADV","X1"];
+      for (i1=0;i1<um1.length;i1++) { th.push(BOXDOX[1][um1[i1]].m); }
+      th.push("X2");
+      th.push("M2");      
+    }
+    if (m2 < 0) {
+      th = ["M1","X1"];
+      for (i2=0;i2<um2.length;i2++) { th.push(BOXDOX[2][um2[i2]].m + "<br/>" + BOXDOX[2][um2[i2]].f[3].si); }
+      th.push("X2");
+      th.push("ADV");      
+    }
+
     var F = d3.select("#FOOTSIE");
     F.selectAll("*").remove();
     var FT = F.append("table").style("width","100%").style("table-layout","fixed");
-    FT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
+    FT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").html(function(d,i){return d;})
 
-    i1 = 2;
-    // for (i1=0;i1<um1.length/4;i1++) 
+    if (m1 < 0)    
     {
-      i2 = 6;
-      //for (i2=0;i2<um1.length;i2++) 
-      {
-        // var b1 = BOXDOX[1][um1[i1]];
-        // var b2 = BOXDOX[2][um2[i2]];
+      adv = m1;
 
-        var b1 = BOXDOX[1][m1];
+      //for (i2=0;i2<um2.length;i2++) {
+      for (i2=0;i2<1;i2++) {
+
+        //m2 = um2[i2];
         var b2 = BOXDOX[2][m2];
 
         for (x=0.5;x<2.0;x+=0.05) {
 
-          var tr = FT.append("tr").style("background-color",i%2==0?"#222":"#111");   
-          // tr.append("td").text(i++);
-          // tr.append("td").text(um1[i1]).style("background-color",mScale1(i1));
-          // tr.append("td").text(um2[i2]).style("background-color",mScale2(i2));
-          tr.append("td").text(b1.m).style("background-color",mScale1(i1));
+          var tr = FT.append("tr").style("background-color",i++%2==0?"#222":"#111");   
+          tr.append("td").text(adv).style("background-color",mScale1(1));        
           tr.append("td").text(-x.toFixed(2)).style("background-color",xScale1(x));
 
-          for (adv=7;adv>=-7;adv-=1) {
+          for (i1=0;i1<um1.length;i1++) {
+
+            m1 = um1[i1];
+            var b1 = BOXDOX[1][m1];
+            
             var r = FOOTSIES(b1,b2,-x,adv);
-            tr.append("td").text(r.r).classed("R"+r.r,true)
+            tr.append("td").text((x*2).toFixed(1)).classed("R"+r.r,true)
               .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
               .on("mouseenter",function(d,i){
                 prop("x1",d.x1);
@@ -615,6 +641,212 @@
               });
           }
 
+          tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));
+          tr.append("td").text(b2.m).style("background-color",mScale2(i2));
+        }
+      }
+
+
+      var FT = F.append("table").style("width","50%").style("table-layout","fixed");
+      FT.append("tr").style("color","#999").selectAll("td").data(["M2","S2","F2","D1","D2","M1"]).enter().append("td").html(function(d,i){return d;})
+
+      for (i2=0;i2<um2.length;i2++) {
+        
+        m2 = um2[i2];
+        var b2 = BOXDOX[2][m2];
+
+        for (i1=0;i1<um1.length;i1++) {
+
+          m1 = um1[i1];
+          var b1 = BOXDOX[1][m1];
+
+          var d1 = 0.0;
+          var d2 = 0.0;
+
+          var tr = null;
+          var td2 = null;
+
+          for (x=0.5;x<2.0;x+=0.05) {
+
+            var r = FOOTSIES(b1,b2,-x,adv);
+
+            if (r.r == 1) {
+
+              if (d1 == 0.0) {
+                tr = FT.append("tr").style("background-color",i++%2==0?"#222":"#111");
+
+                tr.append("td").text(b2.m).style("background-color",mScale2(i2));
+                tr.append("td").text(b2.f[3].si).style("background-color",mScale2(i2));
+                tr.append("td").text(1).style("background-color",mScale2(1));
+
+                d1 = x*2;
+                tr.append("td").text((x*2).toFixed(1)).style("background-color",dScale1(d1))
+                  .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+                  .on("mouseenter",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  })
+                  .on("click",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  });
+
+                td2 = tr.append("td").text((x*2).toFixed(1)).style("background-color",dScale1(d1))
+                  .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+                  .on("mouseenter",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  })
+                  .on("click",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  });
+
+                tr.append("td").text(b1.m).style("background-color",mScale1(i1));
+
+              } else {
+
+                d2 = x*2;
+                td2.text((x*2).toFixed(1)).style("background-color",dScale1(d2))
+                  .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+                  .on("mouseenter",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  })
+                  .on("click",function(d,i){
+                    prop("x1",d.x1);
+                    prop("adv",d.adv);
+                    prop("m1",d.m1);
+                    prop("m2",d.m2);
+                    prop("f",d.f);
+                    render(rparams());
+                  });
+              }
+            } else {
+              d1 = 0.0;
+            }
+
+          }
+
+        }
+      }
+
+    } 
+    else if (m2 < 0)    
+    {
+      adv = m2;
+
+      for (x=0.5;x<2.0;x+=0.05) {
+
+        var b1 = BOXDOX[1][m1];
+
+        var tr = FT.append("tr").style("background-color",i++%2==0?"#222":"#111");
+        
+        tr.append("td").text(b1.m).style("background-color",mScale1(1));
+        tr.append("td").text(-x.toFixed(2)).style("background-color",xScale1(x));
+
+        {
+          for (i2=0;i2<um2.length;i2++) {
+
+            m2 = um2[i2];
+            var b2 = BOXDOX[2][m2];            
+
+
+            var r = FOOTSIES(b1,b2,-x,adv);
+            tr.append("td").text((x*2).toFixed(1)).classed("R"+r.r,true)
+              .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+              .on("mouseenter",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              })
+              .on("click",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              });
+          }
+
+          tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));          
+          tr.append("td").text(adv).style("background-color",mScale2(1));
+        }
+      }
+    } 
+    else
+    {
+      //i2 = 6;
+      //for (i2=0;i2<um1.length;i2++) 
+      {
+        // var b1 = BOXDOX[1][um1[i1]];
+        // var b2 = BOXDOX[2][um2[i2]];
+
+        var b1 = BOXDOX[1][m1];
+        var b2 = BOXDOX[2][m2];
+
+        for (x=0.5;x<2.0;x+=0.05) {
+
+          var d1 = x*2;
+          var d2 = x*2;
+          var tr = FT.append("tr").style("background-color",i++%2==0?"#222":"#111");   
+          // tr.append("td").text(i++);
+          // tr.append("td").text(um1[i1]).style("background-color",mScale1(i1));
+          // tr.append("td").text(um2[i2]).style("background-color",mScale2(i2));
+          tr.append("td").text(b1.m).style("background-color",mScale1(i1));
+          tr.append("td").text(-x.toFixed(2)).style("background-color",xScale1(x));
+          // tr.append("td").text(d1.toFixed(1)).style("background-color",dScale1(d1));
+
+          for (adv=7;adv>=-7;adv-=1) {
+            var r = FOOTSIES(b1,b2,-x,adv);
+            tr.append("td")
+              //.text(r.r)
+              .classed("R"+r.r,true)
+              .text(d1.toFixed(1)).style("background-color", r.r==1?dScale1(d1):r.r==2?dScale2(d2):"")              
+              .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
+              .on("mouseenter",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              })
+              .on("click",function(d,i){
+                prop("x1",d.x1);
+                prop("adv",d.adv);
+                prop("m1",d.m1);
+                prop("m2",d.m2);
+                prop("f",d.f);
+                render(rparams());
+              });
+          }
+
+          // tr.append("td").text(d2.toFixed(1)).style("background-color",dScale2(d2));
           tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));
           tr.append("td").text(b2.m).style("background-color",mScale2(i2));
         }
@@ -1082,8 +1314,11 @@ control.append("input")
       else
         render(rparams());
 
-      if (d.key == "m1" || d.key == "m2")
-        UCFOOTSIES(prop("m1"),prop("m2"));
+      if (d.key == "m1" || d.key == "m2") {
+        if (!UCME) UCFOOTSIES(prop("m1"),prop("m2"));
+        else if (UCME && d.key == "m1") UCFOOTSIES(prop("m1"),-3);
+        else if (UCME && d.key == "m2") UCFOOTSIES(-3,prop("m2"));
+      }
 
       d3.select(this.nextSibling).text(formatkv(d.key,v));
     });
@@ -1097,7 +1332,7 @@ d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 
 d3.select("#adv").select("input").attr("min", -100).attr("max", 100).attr("step", 1).style("transform","rotateY(180deg)");
 d3.select("#f").select("input").attr("min", -1).attr("max", 100).attr("step", 1);
 
-// cload("KRN",1);
+if (UCME) cload("KRN",1);
 
 
 </script>
