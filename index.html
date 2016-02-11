@@ -42,14 +42,14 @@
   #FOOTSIES td.R11 { /*color: #999;*/ color: #009; /*background-color: #001;*/ }
   #FOOTSIES td.R22 { /*color: #999;*/ color: #900; /*background-color: #100;*/ }
 
-  #FOOTSIES td.R0:hover { color: #999; }
-  #FOOTSIES td.R1:hover { color: #fff; background-color: #009 !important; }
-  #FOOTSIES td.R2:hover { color: #fff; background-color: #900 !important; }
-  #FOOTSIES td.R3:hover { color: #fff; background-color: #990 !important; }
-  #FOOTSIES td.R10:hover { color: #00f; background-color: #009 !important; }
-  #FOOTSIES td.R20:hover { color: #f00; background-color: #900 !important; }
-  #FOOTSIES td.R11:hover { color: #00f; }
-  #FOOTSIES td.R22:hover { color: #f00; }
+  #FOOTSIES td.R0.RH, #FOOTSIES td.R0:hover { color: #999; }
+  #FOOTSIES td.R1.RH, #FOOTSIES td.R1:hover { color: #fff; background-color: #009 !important; }
+  #FOOTSIES td.R2.RH, #FOOTSIES td.R2:hover { color: #fff; background-color: #900 !important; }
+  #FOOTSIES td.R3.RH, #FOOTSIES td.R3:hover { color: #fff; background-color: #990 !important; }
+  #FOOTSIES td.R10.RH, #FOOTSIES td.R10:hover { color: #00f; background-color: #009 !important; }
+  #FOOTSIES td.R20.RH, #FOOTSIES td.R20:hover { color: #f00; background-color: #900 !important; }
+  #FOOTSIES td.R11.RH, #FOOTSIES td.R11:hover { color: #00f; }
+  #FOOTSIES td.R22.RH, #FOOTSIES td.R22:hover { color: #f00; }
 
 
   #BOXDOX rect {
@@ -283,7 +283,7 @@
   ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF"],
   ];
   var MOVES = [
-  ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES"], //, "ADV0", "ADV+", "ADV-", "ADV="],
+  ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES", "HOVER"], //, "ADV0", "ADV+", "ADV-", "ADV="],
   ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
   ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
   ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
@@ -364,7 +364,7 @@
       .selectAll("button").data(function(d){return d;}).enter().append("button")
       .attr("class", function(d,i){        
         var p = d3.select(this.parentNode.parentNode).datum();
-        return "MOVE MOVE" + d + " DUP" + (d=="FOOTSIES" || d=="P"+p ? " UC" : "");
+        return "MOVE MOVE" + d + " DUP" + (d=="FOOTSIES" || d=="HOVER" || d=="P"+p ? " UC" : "");
       })
       .text(function(d,i){return d;})
       .on("click", function(d,i) { 
@@ -391,6 +391,12 @@
             var c = !d3.select(this).classed("UC");
             d3.selectAll(".MOVEFOOTSIES").classed("UC",c)
             d3.select("#FOOTSIES").style("display", c ? "" : "none");
+          } else if (d == "HOVER") {
+            var c = !d3.select(this).classed("UC");
+            d3.selectAll(".MOVEHOVER").classed("UC",c);
+            if (c == true) {
+              d3.selectAll(".RH").classed("RH",false);
+            }
           }
           return;
         }
@@ -488,6 +494,34 @@
         x1: d3.select("#x1").select("input").property("value"), 
         f: d3.select("#f").select("input").property("value"), 
         };
+  }
+
+  function FOOTSIESENTER(d,i) {
+    if (d3.selectAll(".MOVEHOVER").classed("UC")==false) return;
+    prop("x1",d.x1);
+    prop("adv",d.adv);
+    prop("m1",d.m1);
+    prop("m2",d.m2);
+    prop("f",d.f);
+    render(rparams());
+  }
+
+  function FOOTSIESCLICK(d,i) {
+    prop("x1",d.x1);
+    prop("adv",d.adv);
+    prop("m1",d.m1);
+    prop("m2",d.m2);
+    prop("f",d.f);
+    render(rparams());    
+    var c = d3.select(this).classed("RH");
+    if (c) {
+      d3.selectAll(".MOVEHOVER").classed("UC",true);  
+      d3.selectAll(".RH").classed("RH",false);
+    } else {
+      d3.selectAll(".MOVEHOVER").classed("UC",false);
+      d3.selectAll(".RH").classed("RH",false);
+      d3.select(this).classed("RH",true);
+    }
   }
 
   function UM(p) {
@@ -649,22 +683,7 @@
             var r = FOOTSIES(b1,b2,-x,adv);
             tr.append("td").text((x*2).toFixed(1)).classed("R"+r.r,true)
               .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-              .on("mouseenter",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              })
-              .on("click",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              });
+              .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
           }
 
           tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));
@@ -708,41 +727,11 @@
                 d1 = x*2;
                 tr.append("td").text((x*2).toFixed(1)).style("background-color",dScale1(d1))
                   .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-                  .on("mouseenter",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  })
-                  .on("click",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  });
+                  .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
 
                 td2 = tr.append("td").text((x*2).toFixed(1)).style("background-color",dScale1(d1))
                   .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-                  .on("mouseenter",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  })
-                  .on("click",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  });
+                  .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
 
                 tr.append("td").text(b1.m).style("background-color",mScale1(i1));
 
@@ -751,22 +740,7 @@
                 d2 = x*2;
                 td2.text((x*2).toFixed(1)).style("background-color",dScale1(d2))
                   .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-                  .on("mouseenter",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  })
-                  .on("click",function(d,i){
-                    prop("x1",d.x1);
-                    prop("adv",d.adv);
-                    prop("m1",d.m1);
-                    prop("m2",d.m2);
-                    prop("f",d.f);
-                    render(rparams());
-                  });
+                  .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
               }
             } else {
               d1 = 0.0;
@@ -801,22 +775,7 @@
             var r = FOOTSIES(b1,b2,-x,adv);
             tr.append("td").text((x*2).toFixed(1)).classed("R"+r.r,true)
               .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-              .on("mouseenter",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              })
-              .on("click",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              });
+              .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
           }
 
           tr.append("td").text(+x.toFixed(2)).style("background-color",xScale2(x));          
@@ -856,22 +815,7 @@
               .text(r.h != "" ? r.h : d1.toFixed(1))
               .style("background-color", r.r==1||r.r==10?dScale1(d1):r.r==2||r.r==20?dScale2(d2):"")              
               .datum({x1:-x,adv:adv,m1:m1,m2:m2,f:r.f})
-              .on("mouseenter",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              })
-              .on("click",function(d,i){
-                prop("x1",d.x1);
-                prop("adv",d.adv);
-                prop("m1",d.m1);
-                prop("m2",d.m2);
-                prop("f",d.f);
-                render(rparams());
-              });
+              .on("mouseenter",FOOTSIESENTER).on("click",FOOTSIESCLICK);
           }
 
           // tr.append("td").text(d2.toFixed(1)).style("background-color",dScale2(d2));
@@ -1203,11 +1147,12 @@
                   .attr("transform", "translate("+((i%10)*100+25)+","+(325+Math.floor(i/10)*75)+")scale(20)")
                   .datum(f)
                   .on("mouseover",function(){
+                    //if (d3.selectAll(".MOVEHOVER").classed("UC")==false) return;
                     var df = d3.select(this).datum();
-                    //console.log(df);
                     update(df);
                   })
                   .on("click",function(){
+                    //d3.selectAll(".MOVEHOVER").classed("UC",false);
                     d3.select("#f").select("input").node().focus();
                   });
 
