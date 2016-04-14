@@ -165,13 +165,14 @@
   div#PLAYERS, div#UCHITBOX, div#FOOTSIES {
     width: 100%;
     text-align: center;
+    white-space: nowrap;
   }
   div#FOOTSIE {
     width: 960px;
     margin: 0 auto;
   }
   div.PLAYER {
-    max-width: 45%;
+    /*max-width: 45%;*/
     display: inline-block;
   }
   div.UCHITBOX {
@@ -188,7 +189,7 @@
   div.ROW {    
     white-space: nowrap;
   }
-  .MOVES div:nth-of-type(2), .MOVES div:nth-of-type(4) {
+  .MOVES div:nth-of-type(3), .MOVES div:nth-of-type(5) {
     padding-top: 10px;
   }
   .DIALS div:nth-of-type(1) {
@@ -277,13 +278,15 @@
 <script>
 
   var UCME = !true;
+  var BOXLEN = 48;
   var BOXDOX = [[],[],[]];
   var CHARS = [
-  ["ALX","BLR", "BLR2", "BRD", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN"],
-  ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "ZGF"],
+  ["ALX","BLR", "BLR2", "BRD", "BRD2", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN"],
+  ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "VEG2", "ZGF"],
   ];
   var MOVES = [
   ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES", "HOVER"], //, "ADV0", "ADV+", "ADV-", "ADV="],
+  [ "4D", "6D", "2C", "5S", "4W", "6W", "7J", "8J", "9J"],
   ["4LP", "4MP", "4HP", "5LP", "5MP", "5HP", "6LP", "6MP", "6HP"],
   ["4LK", "4MK", "4HK", "5LK", "5MK", "5HK", "6LK", "6MK", "6HK"],
   ["1LP", "1MP", "1HP", "2LP", "2MP", "2HP", "3LP", "3MP", "3HP"],
@@ -446,6 +449,7 @@
       if (error!=null) return;
 
       BOXDOX[p] = eval(data);
+      BOXDOX[p].forEach(function(m,mi){ m.i = mi; });
       if (BOXDOX[1].length == 0) BOXDOX[1] = BOXDOX[p];
       if (BOXDOX[2].length == 0) BOXDOX[2] = BOXDOX[p];
       render(rparams());
@@ -565,11 +569,11 @@
     var priority = {T:1000,H:50,M:40,L:30};
     var r = 0;
 
-    var x1 = +x+2;
-    var x2 = -x-2;
-
     var b1 = m1;
     var b2 = m2;
+
+    var x1 = +x-b1.x;
+    var x2 = -x-b2.x;
           
     var adv = Math.floor(adv);
 
@@ -891,15 +895,20 @@
     var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
     var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
 
-    var x1 = p12 ? -params.x1-2 : +params.x1+2;
-    var x2 = p21 ? +params.x1+2 : -params.x1-2;
+    // var x1 = p12 ? -params.x1-2 : +params.x1+2;
+    // var x2 = p21 ? +params.x1+2 : -params.x1-2;
 
     var UCB = d3.select("#UC"+p).selectAll(".UC");
 
     UCB.each(function(d,di){
 
-      var b1 = BOXDOX[1][d.m + (d.m<38?1:-1) * (p12 ? 38 :0)];
-      var b2 = BOXDOX[2][d.m + (d.m<38?1:-1) * (p21 ? 38 :0)];
+      if (d == null) return;
+      
+      var b1 = BOXDOX[1][d.m + (d.m<BOXLEN?1:-1) * (p12 ? BOXLEN :0)];
+      var b2 = BOXDOX[2][d.m + (d.m<BOXLEN?1:-1) * (p21 ? BOXLEN :0)];
+
+      var x1 = p12 ? -params.x1-b1.x : +params.x1-b1.x;
+      var x2 = p21 ? +params.x1-b2.x : -params.x1-b2.x;
 
       var m = p == 1 ? b1 : b2;//BOXDOX[p][um[i]];
       var dg = ag.append("g");
@@ -966,14 +975,17 @@
     var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
     var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
 
-    var x1 = p12 ? -params.x1-2 : +params.x1+2;
-    var x2 = p21 ? +params.x1+2 : -params.x1-2;
+    // var x1 = p12 ? -params.x1-2 : +params.x1+2;
+    // var x2 = p21 ? +params.x1+2 : -params.x1-2;
 
     for (i=0;i<um.length;i++) {
 
 
-      var b1 = BOXDOX[1][um[i] + (um[i]<38?1:-1) * (p12 ? 38 :0)];
-      var b2 = BOXDOX[2][um[i] + (um[i]<38?1:-1) * (p21 ? 38 :0)];
+      var b1 = BOXDOX[1][um[i] + (um[i]<BOXLEN?1:-1) * (p12 ? BOXLEN :0)];
+      var b2 = BOXDOX[2][um[i] + (um[i]<BOXLEN?1:-1) * (p21 ? BOXLEN :0)];
+
+      var x1 = p12 ? -params.x1-b1.x : +params.x1-b1.x;
+      var x2 = p21 ? +params.x1-b2.x : -params.x1-b2.x;
 
       var m = p == 1 ? b1 : b2;//BOXDOX[p][um[i]];
       var dg = ag.append("g");
@@ -1039,12 +1051,12 @@
       var p12 = d3.select("#P1").select(".MOVEP2").classed("UC");
       var p21 = d3.select("#P2").select(".MOVEP1").classed("UC");
 
-      var x1 = p12 ? -params.x1-2 : +params.x1+2;
-      var x2 = p21 ? +params.x1+2 : -params.x1-2;
+      var b1 = BOXDOX[1][+params.m1 + (+params.m1<BOXLEN?1:-1) * (p12 ? BOXLEN :0)];
+      var b2 = BOXDOX[2][+params.m2 + (+params.m2<BOXLEN?1:-1) * (p21 ? BOXLEN :0)];
 
-      var b1 = BOXDOX[1][+params.m1 + (+params.m1<38?1:-1) * (p12 ? 38 :0)];
-      var b2 = BOXDOX[2][+params.m2 + (+params.m2<38?1:-1) * (p21 ? 38 :0)];
-      
+      var x1 = p12 ? -params.x1-b1.x : +params.x1-b1.x;
+      var x2 = p21 ? +params.x1-b2.x : -params.x1-b2.x;
+
       var f = Math.floor(params.f);
       var adv = Math.floor(params.adv);
       var f1 = f;
@@ -1187,7 +1199,7 @@
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (+params.x1+2)+d.rx; })
+          .attr("x", function(d) { return (+params.x1-b1.x)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
@@ -1203,7 +1215,7 @@
         }
         dg.selectAll("rect").data(rects).enter().append("rect")
           .attr("class", function(d) {return d.c;})
-          .attr("x", function(d) { return (-params.x1-2)+d.rx; })
+          .attr("x", function(d) { return (-params.x1-b2.x)+d.rx; })
           .attr("y", function(d) { return -d.ry-d.rh; })
           .attr("height", function(d) { return d.rh; })
           .attr("width", function(d) { return d.rw; });
@@ -1299,8 +1311,8 @@ control.append("input")
 control.append("span")
     .text(function(d) { return formatkv(d.key, d.value); });
 
-d3.select("#m1").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
-d3.select("#m2").select("input").attr("min", 0).attr("max", 75).attr("step", 1);
+d3.select("#m1").select("input").attr("min", 0).attr("max", BOXLEN*2-1).attr("step", 1);
+d3.select("#m2").select("input").attr("min", 0).attr("max", BOXLEN*2-1).attr("step", 1);
 d3.select("#x1").select("input").attr("min", -3).attr("max", -0.5).attr("step", 0.05);
 d3.select("#adv").select("input").attr("min", -100).attr("max", 100).attr("step", 1).style("transform","rotateY(180deg)");
 d3.select("#f").select("input").attr("min", -1).attr("max", 100).attr("step", 1);
