@@ -903,7 +903,7 @@
     UCB.each(function(d,di){
 
       if (d == null) return;
-      
+
       var b1 = BOXDOX[1][d.m + (d.m<BOXLEN?1:-1) * (p12 ? BOXLEN :0)];
       var b2 = BOXDOX[2][d.m + (d.m<BOXLEN?1:-1) * (p21 ? BOXLEN :0)];
 
@@ -1254,7 +1254,7 @@ var svg = d3.select("#svg")
     .attr("height", 500);
 
 
-var defaults = {m1:1,m2:39,adv:0,x1:-1.5,f:-2};
+var defaults = {m1:0,m2:BOXLEN,adv:0,x1:-1.5,f:-2};
 
 var path = svg.append("path")
     .attr("class", "big")
