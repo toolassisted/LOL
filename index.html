@@ -281,8 +281,8 @@
   var BOXLEN = 47;
   var BOXDOX = [[],[],[]];
   var CHARS = [
-  ["ALX","BLR", "BLR2", "BRD", "BRD2", "CMY", "CNL", "CNL2", "DSM", "FAN", "KEN", "KRN"],
-  ["LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "VEG2", "ZGF"],
+  ["ALX","BLR", "BLR2", "BRD", "BRD2", "CMY", "CNL", "CNL2", "DSM", "FAN", "GUL", "KEN" ],
+  ["KRN", "LAR", "NCL", "NCL2", "NSH", "RMK", "RSD", "RYU", "RYU2", "VEG", "VEG2", "ZGF"],
   ];
   var MOVES = [
   ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES", "HOVER"], //, "ADV0", "ADV+", "ADV-", "ADV="],
@@ -553,7 +553,13 @@
         var r1 = {left:b1.rx+x1,top:b1.ry,right:b1.rx+x1+b1.rw,bottom:b1.ry+b1.rh};
         for (var c2=0;c2<f2.c6.length;c2++) {
           var b2 = f2.c6[c2];
-          if ((b1.t == 2 && b2.t == 4) || (b1.t == 0 && b2.t != 4)) {          
+          if ((b1.t == 2 && b2.t == 4 && ((f2.c1 & 4) != 4)) || (b1.t == 0 && b2.t != 4
+            
+            && (((b1.i & 1) == 0) || ((b1.i & 1) == 1) && ((f2.c1 & 1) != 1))
+            && (((b1.i & 2) == 0) || ((b1.i & 2) == 2) && ((f2.c1 & 2) != 2))
+            && (((b1.i & 4) == 0) || ((b1.i & 4) == 4) && ((f2.c1 & 4) != 4))
+
+            )) {
             var r2 = {left:b2.rx+x2,top:b2.ry,right:b2.rx+x2+b2.rw,bottom:b2.ry+b2.rh};
             var hit = !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
             if (hit) return 1; //b1.t == 2 ? 1000 : b1.s;
