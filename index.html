@@ -1090,7 +1090,7 @@
 
       frame = b2.f[f2];
       dg.append("text")
-        .text(formatadv(-params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":"") + ((frame.c1 & 0x4) ? " AIR" :"") + ((frame.c1 & 0x20) ? " CH" :""))
+        .text(formatadv(-params.adv) + " ADV . " + (frame.s0 > 0 ? (frame.s0+1)+"F . ": "") + frame.s + " " + (frame.sf+1) + (frame.sf == frame.s1 ? " IASA" : frame.sf > frame.s1 ? " +":"") + ((frame.c1 & 0x4) ? " . AIR" :"") + ((frame.c1 & 0x20) ? " . CH" :""))
         .attr("fill","#999")
         .attr("text-anchor","middle")
         .attr("transform", "translate(2,0.2)scale(0.015)");
