@@ -2,12 +2,63 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.30, minimum-scale=0.10, maximum-scale=100.0, user-scalable=1">
 <title>SFV FOOTSIES LOL</title>
 <style>
 
+  html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
   body {
+    height: 100%;
     background-color: #000;
     color: #fff;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex: 0 0 auto;
+  }
+  nav {
+    display: flex;
+    overflow-y: auto;
+    flex: 0 0 auto;
+    padding-top: 10vh;
+    padding-right: 1em;
+    -webkit-overflow-scrolling: touch;
+    /*height: 100vh;*/
+  }
+  .CHARNAV {
+    display: flex;
+    padding-left: 1em;
+  }
+  .SEASON {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    height: 100vh;    
+    padding-bottom: 50vh;
+  }
+  .CHAR {
+    flex-shrink: 0;
+  }
+
+  main {
+    display: flex;
+    overflow-y: auto;
+    flex: 0 0 auto;
+    flex-direction: column;
+    padding: 0 1em;
+    -webkit-overflow-scrolling: touch;
+  }
+  aside {
+    display: flex;
+    overflow-y: auto;
+    flex: 1 0 30vw;
+    padding-top: 10vh;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
   }
 
   path {
@@ -165,7 +216,7 @@
   div#PLAYERS, div#UCHITBOX, div#FOOTSIES {
     width: 100%;
     text-align: center;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
   }
   div#FOOTSIE {
     width: 960px;
@@ -176,11 +227,13 @@
     display: inline-block;
   }
   div.UCHITBOX {
-    max-width: 45%;
-    display: inline-block;
+    /*max-width: 45%;*/
+    /*display: inline-block;*/
     vertical-align: top;
   }
-
+  div#UCHITBOX {
+    padding-bottom: 50vh;
+  }
   div#PLAYERS, div#UCHITBOX {
     width: 100%;
     text-align: center;
@@ -259,9 +312,14 @@
 </style>
 </head>
 <body>
+<nav>
+<div id="NAVP1" class="CHARNAV"></div>
+<div id="NAVP2" class="CHARNAV"></div>
+</nav>
+<main>
 <div id="PLAYERS">
-<div id="P1" class="PLAYER"><div class="CHARS"></div><div class="MOVES"></div></div>
-<div id="P2" class="PLAYER"><div class="CHARS"></div><div class="MOVES"></div></div>
+<div id="P1" class="PLAYER"><div class="MOVES"></div></div>
+<div id="P2" class="PLAYER"><div class="MOVES"></div></div>
 <div id="P0"><div class="DIALS"></div></div>
 <div id="controls"></div>
 </div>
@@ -270,10 +328,13 @@
 <div id="FOOTSIE">
 </div>
 </div>
+</main>
+<aside>
 <div id="UCHITBOX">
 <div id="UC1" class="UCHITBOX"></div>
 <div id="UC2" class="UCHITBOX"></div>
 </div>
+</aside>
 <script src="d3.min.js"></script>
 <script>
 
@@ -281,13 +342,13 @@
   var BOXLEN = 47;
   var BOXDOX = [[],[],[]];
   var CHARS = [
-  ["ALX","BLR", "BLR2", "BRD", "BRD2", "BSN", "CMY", "CNL", "CNL2", "DSM"],
-  ["FAN", "GUL", "IBK", "JRI", "JRI2", "JRIV19", "KEN", "KRN", "LAR", "NCL", "NCL2"],
-  ["NSH", "RMK", "RSD", "RYU", "RYU2", "URN", "URN2", "VEG", "VEG2", "ZGF"],
-  ["ALXS2", "BLRS2", "BLR2S2", "BRDS2", "BRD2S2", "BSNS2", "CMYS2"],
-  ["CNLS2", "CNL2S2", "DSMS2", "FANS2", "GOKBETA", "GULS2", "IBKS2"],
-  ["JRIS2", "JRI2S2", "KENS2", "KRNS2", "LARS2", "NCLS2", "NCL2S2", "NSHS2"],
-  [ "RMKS2", "RSDS2", "RYUS2", "RYU2S2", "URNS2", "VEGS2", "VEG2S2", "ZGFS2"],
+  ["ALX","BLR", "BLR2", "BRD", "BRD2", "BSN", "CMY", "CNL", "CNL2", "DSM",
+  "FAN", "GOKBETA", "GUL", "IBK", "JRI", "JRI2", "JRIV19", "KEN", "KRN", "LAR", "NCL", "NCL2",
+  "NSH", "RMK", "RSD", "RYU", "RYU2", "URN", "URN2", "VEG", "VEG2", "ZGF"],
+  ["ALXS2", "BLRS2", "BLR2S2", "BRDS2", "BRD2S2", "BSNS2", "CMYS2",
+  "CNLS2", "CNL2S2", "DSMS2", "FANS2", "GOKBETA", "GULS2", "IBKS2",
+  "JRIS2", "JRI2S2", "JRIV19", "KENS2", "KRNS2", "LARS2", "NCLS2", "NCL2S2", "NSHS2",
+   "RMKS2", "RSDS2", "RYUS2", "RYU2S2", "URNS2", "URNS2", "VEGS2", "VEG2S2", "ZGFS2"]
   ];
   var MOVES = [
   ["4T", "5T", "ALL", "P1", "P2", "FOOTSIES", "HOVER"], //, "ADV0", "ADV+", "ADV-", "ADV="],
@@ -356,12 +417,12 @@
 
       } );
 
-  var CDIV = d3.selectAll(".CHARS").datum(function(d,i){return i+1;});
-  CDIV.selectAll("div").data(CHARS).enter().append("div").attr("class","ROW")
+  var CDIV = d3.selectAll(".CHARNAV").datum(function(d,i){return i+1;});
+  CDIV.selectAll("div").data(CHARS).enter().append("div").attr("class","SEASON")
       .selectAll("button").data(function(d){return d;}).enter().append("button").attr("class","CHAR")
       .on("click",function(d,i){
         var p = d3.select(this.parentNode.parentNode).datum();
-        d3.select("#P"+p).selectAll(".CHAR").classed("SEL",false);
+        d3.select("#NAVP"+p).selectAll(".CHAR").classed("SEL",false);
         d3.select(this).classed("SEL",true);
         cload(d,p);
       })
@@ -847,7 +908,7 @@
 
     var UC = d3.select("#UC"+p);
     UC.selectAll("*").remove();
-    var UCT = UC.append("table").style("width","100%");
+    var UCT = UC.append("table");//.style("width","100%");
     UCT.append("tr").style("color","#999").selectAll("td").data(th).enter().append("td").text(function(d,i){return d;})
 
     var um = UM(p);
